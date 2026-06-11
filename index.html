@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales & Inventory Management System Pro</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --sidebar-active: #2563eb;
+            --bg: #f1f5f9;
+            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 15px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.12), 0 10px 10px rgba(0,0,0,0.04);
+            --glass-bg: rgba(255,255,255,0.15);
+            --glass-border: rgba(255,255,255,0.2);
+            --glass-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            display: flex;
+            min-height: 100vh;
+            color: var(--text);
+            position: relative;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #cbd5e1, #94a3b8); border-radius: 10px; transition: all 0.3s; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #94a3b8, #64748b); }
+        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9; }
+
+        /* Loading Animations */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes progressBar { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60%, 100% { content: '...'; } }
+        @keyframes skeleton { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes slideInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideInLeft { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+        @keyframes borderGlow { 0%, 100% { border-color: var(--primary); box-shadow: 0 0 5px rgba(37,99,235,0.2); } 50% { border-color: var(--primary-light); box-shadow: 0 0 15px rgba(37,99,235,0.4); } }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes cardEntrance { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+        
+        .loading-dots::after { content: '.'; animation: dots 1.5s infinite; }
+        
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--info));
+            background-size: 200% 100%;
+            border-radius: 2px;
+            animation: progressBar 2s ease-out, gradientShift 3s infinite;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite, skeleton 1.5s infinite;
+            border-radius: var(--radius-md);
+            height: 20px;
+        }
+        
+        .skeleton-text { width: 70%; height: 16px; margin: 8px 0; }
+        .skeleton-title { width: 40%; height: 24px; margin: 12px 0; }
+        .skeleton-avatar { width: 48px; height: 48px; border-radius: 50%; }
+        .skeleton-card { width: 100%; height: 120px; margin: 10px 0; }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            width: 0px !important;
+            min-width: 0px !important;
+            overflow: hidden !important;
+            transition: var(--transition) !important;
+            background: linear-gradient(180deg, #0f172a 0%, #1a1f3a 100%);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .sidebar.open {
+            width: 280px !important;
+            min-width: 280px !important;
+            overflow-y: auto !important;
+        }
+        
+        .sidebar-logo {
+            padding: 22px 20px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-logo .icon {
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .sidebar-logo span {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .sidebar-nav { flex: 1; padding: 10px 0; overflow-y: auto; }
+        
+        .nav-section { margin-bottom: 2px; }
+        
+        .nav-section-title {
+            padding: 12px 20px;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #94a3b8;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 0;
+            background: var(--primary);
+            transition: height 0.3s ease;
+        }
+        
+        .nav-section-title:hover { color: #e2e8f0; }
+        .nav-section-title:hover::before { height: 100%; }
+        .nav-section-title.open { color: #fff; }
+        .nav-section-title.open::before { height: 100%; }
+        
+        .nav-section-title .arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.5rem;
+            opacity: 0.7;
+        }
+        
+        .nav-section-title.open .arrow { transform: rotate(90deg); opacity: 1; }
+        
+        .nav-items {
+            list-style: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        
+        .nav-items.open { max-height: 2000px; }
+        
+        .nav-items li a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 20px 11px 48px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: var(--transition);
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-items li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(37,99,235,0.15) 0%, transparent 100%);
+            transition: width 0.4s ease;
+        }
+        
+        .nav-items li a:hover::before { width: 100%; }
+        .nav-items li a:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+            transform: translateX(4px);
+        }
+        
+        .nav-items li a.active {
+            background: linear-gradient(90deg, rgba(37,99,235,0.2) 0%, rgba(30,58,138,0.1) 100%);
+            color: #fff;
+            border-left-color: var(--sidebar-active);
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(37,99,235,0.1);
+        }
+        
+        .nav-add-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .nav-add-btn:hover {
+            background: #fff;
+            color: var(--primary);
+            transform: scale(1.2) rotate(90deg);
+            box-shadow: 0 0 20px rgba(37,99,235,0.5);
+        }
+        
+        .sidebar-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /* ========== HAMBURGER BUTTON ========== */
+        .hamburger-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: #fff;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .hamburger-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(37,99,235,0.4);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            margin-left: 0px !important;
+            transition: var(--transition) !important;
+            padding: 25px;
+            min-height: 100vh;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .main-content.shifted {
+            margin-left: 280px !important;
+        }
+
+        /* ========== PAGE HEADER ========== */
+        .page-header {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            padding: 22px 28px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.4);
+            animation: slideInUp 0.5s ease;
+        }
+        
+        .page-header h1 {
+            font-size: 1.5rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .page-header .badge {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            padding: 7px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+
+        /* ========== GLASSMORPHISM CARDS ========== */
+        .card {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: var(--transition);
+            animation: cardEntrance 0.5s ease;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-3px);
+            border-color: rgba(37,99,235,0.1);
+        }
+        
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ========== FORM ELEMENTS ========== */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 18px;
+            align-items: flex-end;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 160px;
+            flex: 1;
+        }
+        
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: color 0.3s;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 11px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            transition: var(--transition);
+            background: rgba(248,250,252,0.8);
+            width: 100%;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.08), 0 0 15px rgba(37,99,235,0.05);
+            background: #fff;
+            transform: translateY(-2px);
+            animation: borderGlow 2s infinite;
+        }
+        
+        .form-group.small { min-width: 90px; flex: 0.5; }
+
+        /* ========== GRADIENT BUTTONS ========== */
+        .btn {
+            padding: 11px 22px;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s;
+        }
+        
+        .btn:active::after { width: 300px; height: 300px; }
+        .btn:active { transform: scale(0.96) !important; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(37,99,235,0.5);
+            transform: translateY(-3px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+        }
+        
+        .btn-success:hover {
+            box-shadow: 0 8px 25px rgba(16,185,129,0.5);
+            transform: translateY(-3px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(239,68,68,0.3);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(239,68,68,0.5);
+            transform: translateY(-3px);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+        }
+        
+        .btn-warning:hover {
+            box-shadow: 0 8px 25px rgba(245,158,11,0.5);
+            transform: translateY(-3px);
+        }
+        
+        .btn-outline {
+            background: rgba(255,255,255,0.5);
+            border: 2px solid var(--border);
+            color: var(--text);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(241,245,249,0.8);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-sm { padding: 7px 14px; font-size: 0.75rem; }
+
+        /* ========== STYLED TABLES ========== */
+        .table-container {
+            overflow-x: auto;
+            margin: 18px 0;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+        }
+        
+        table th {
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.8px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        
+        table tbody tr:nth-child(even) { background: rgba(248,250,252,0.5); }
+        table tbody tr { transition: all 0.2s ease; }
+        
+        table tbody tr:hover {
+            background: rgba(37,99,235,0.04);
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .records-table th {
+            background: linear-gradient(180deg, #1e293b, #2d3a4f);
+            color: #fff;
+            padding: 14px 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        
+        .records-table tr:hover td { background: rgba(37,99,235,0.06); }
+
+        /* ========== KPI DASHBOARD CARDS ========== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 22px;
+            margin-bottom: 28px;
+        }
+        
+        .dash-card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(15px);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.5);
+            animation: slideInUp 0.6s ease backwards;
+        }
+        
+        .dash-card:nth-child(1) { animation-delay: 0.05s; }
+        .dash-card:nth-child(2) { animation-delay: 0.15s; }
+        .dash-card:nth-child(3) { animation-delay: 0.25s; }
+        .dash-card:nth-child(4) { animation-delay: 0.35s; }
+        .dash-card:nth-child(5) { animation-delay: 0.45s; }
+        .dash-card:nth-child(6) { animation-delay: 0.55s; }
+        
+        .dash-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            transition: height 0.3s ease;
+        }
+        
+        .dash-card:hover::before { height: 8px; }
+        .dash-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .dash-card .icon {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            animation: float 3s ease-in-out infinite;
+            display: block;
+        }
+        
+        .dash-card .count {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin: 10px 0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dash-card .label {
+            color: var(--text-light);
+            font-size: 0.88rem;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        
+        .dash-card.quotation::before { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+        .dash-card.quotation .count { background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dash-card.order::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .dash-card.order .count { background: linear-gradient(135deg, #f59e0b, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dash-card.invoice::before { background: linear-gradient(90deg, #10b981, #059669); }
+        .dash-card.invoice .count { background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dash-card.dispatch::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+        .dash-card.dispatch .count { background: linear-gradient(135deg, #8b5cf6, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dash-card.customer::before { background: linear-gradient(90deg, #ec4899, #db2777); }
+        .dash-card.customer .count { background: linear-gradient(135deg, #ec4899, #db2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dash-card.stock::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+        .dash-card.stock .count { background: linear-gradient(135deg, #06b6d4, #0891b2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ========== STATUS BADGES ========== */
+        .badge-count {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        }
+        
+        .stock-badge {
+            padding: 5px 14px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        
+        .stock-in { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+        .stock-out { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; }
+        .stock-transfer { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+
+        /* ========== BUTTON ICONS ========== */
+        .btn-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .btn-icon:hover { transform: scale(1.15); }
+        .btn-view { background: #e0f2fe; color: #0284c7; }
+        .btn-view:hover { background: #bae6fd; box-shadow: 0 4px 15px rgba(2,132,199,0.3); }
+        .btn-edit { background: #fef3c7; color: #d97706; }
+        .btn-edit:hover { background: #fde68a; box-shadow: 0 4px 15px rgba(217,119,6,0.3); }
+        .btn-delete { background: #fee2e2; color: #dc2626; }
+        .btn-delete:hover { background: #fecaca; box-shadow: 0 4px 15px rgba(220,38,38,0.3); }
+        .btn-convert-sm {
+            background: #d1fae5;
+            color: #059669;
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .btn-convert-sm:hover { background: #a7f3d0; color: #047857; transform: scale(1.15); }
+
+        /* ========== MODAL / POPUP ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 9999;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+        
+        .modal-dialog {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            width: 95%;
+            max-width: 1200px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 28px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite;
+            color: #fff;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .modal-close {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #fff;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: #fff;
+            color: var(--primary);
+            transform: rotate(90deg);
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
+        
+        .modal-body { padding: 28px; }
+        
+        .modal-footer {
+            padding: 18px 28px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            position: sticky;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+        }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 16px 28px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            z-index: 99999;
+            animation: slideInRight 0.4s ease;
+            box-shadow: 0 10px 30px rgba(16,185,129,0.4);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            letter-spacing: 0.3px;
+        }
+
+        /* ========== CONFIRM DIALOG ========== */
+        .confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .confirm-dialog {
+            background: #fff;
+            padding: 35px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 90%;
+            animation: slideInUp 0.3s ease;
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+            .form-row { gap: 10px; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar.open { width: 250px !important; min-width: 250px !important; }
+            .main-content.shifted { margin-left: 250px !important; }
+            .main-content { padding: 15px; }
+            .dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+            .form-row { flex-direction: column; }
+            .form-group { min-width: 100% !important; }
+            .page-header { flex-direction: column; gap: 12px; text-align: center; }
+            .modal-dialog { width: 98%; margin: 5px; max-width: 100%; }
+            table { font-size: 0.75rem; }
+            table th, table td { padding: 8px 6px; }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar.open { width: 200px !important; min-width: 200px !important; }
+            .main-content.shifted { margin-left: 200px !important; }
+            .dash-card .count { font-size: 1.8rem; }
+            .dash-card { padding: 18px; }
+            .btn { padding: 9px 16px; font-size: 0.78rem; }
+            .modal-dialog { border-radius: var(--radius-md); }
+        }
+
+        /* ========== PRINT STYLES ========== */
+        @media print {
+            body { background: #fff !important; }
+            .sidebar, .hamburger-btn, .modal-overlay, .toast, .btn, .actions, 
+            .nav-add-btn, .btn-icon, .btn-convert-sm { display: none !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
+            .table-container { box-shadow: none !important; }
+        }
+
+        /* ========== SEARCHABLE DROPDOWN ========== */
+        .searchable-dropdown { position: relative; }
+        
+        .searchable-dropdown .search-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            transition: var(--transition);
+            background: rgba(248,250,252,0.8);
+        }
+        
+        .searchable-dropdown .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+            outline: none;
+        }
+        
+        .searchable-dropdown .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            z-index: 100;
+            display: none;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .searchable-dropdown .dropdown-list.show {
+            display: block;
+            animation: slideInUp 0.2s ease;
+        }
+        
+        .searchable-dropdown .dropdown-list .option {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+        
+        .searchable-dropdown .dropdown-list .option:hover {
+            background: linear-gradient(90deg, rgba(37,99,235,0.08) 0%, transparent 100%);
+            padding-left: 20px;
+        }
+        
+        .searchable-dropdown .dropdown-list .option.selected {
+            background: rgba(37,99,235,0.1);
+            font-weight: 700;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+    </style>
+</head>
+<body>
+    <button class="hamburger-btn" id="hamburgerBtn" title="Menu">☰</button>
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="icon">📊</span>
+            <span>SalesPro ERP</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title open" onclick="toggleNavSection(this)">
+                    <span class="arrow">▶</span> MAIN
+                </div>
+                <ul class="nav-items open">
+                    <li><a onclick="navigateTo('dashboard', this)"><span>📊 Dashboard</span></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title open" onclick="toggleNavSection(this)">
+                    <span class="arrow">▶</span> SALE
+                </div>
+                <ul class="nav-items open" id="saleNav">
+                    <li><a onclick="navigateTo('saleQuotation', this)"><span>📄 Quotation</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Quotation')" title="New">+</button></a></li>
+                    <li><a onclick="navigateTo('saleOrder', this)"><span>📋 Order</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Order')" title="New">+</button></a></li>
+                    <li><a onclick="navigateTo('salesTaxInvoice', this)"><span>🧾 Invoice</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Invoice')" title="New">+</button></a></li>
+                    <li><a onclick="navigateTo('dispatchNote', this)"><span>🚚 Dispatch</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Dispatch Note')" title="New">+</button></a></li>
+                    <li><a onclick="navigateTo('goodsReturn', this)"><span>↩️ Return</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Goods Return')" title="New">+</button></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title open" onclick="toggleNavSection(this)">
+                    <span class="arrow">▶</span> PURCHASE
+                </div>
+                <ul class="nav-items open" id="purchaseNav">
+                    <li><a onclick="navigateTo('purchaseOrder', this)"><span>📄 Purchase Order</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Purchase Order')" title="New">+</button></a></li>
+                    <li><a onclick="navigateTo('goodsReceipt', this)"><span>📥 Goods Receipt</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Goods Receipt')" title="New">+</button></a></li>
+                    <li><a onclick="navigateTo('purchaseInvoice', this)"><span>🧾 Purchase Invoice</span><button class="nav-add-btn" onclick="event.stopPropagation(); openNewEntryPopup('Purchase Invoice')" title="New">+</button></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title open" onclick="toggleNavSection(this)">
+                    <span class="arrow">▶</span> CONTACTS
+                </div>
+                <ul class="nav-items open">
+                    <li><a onclick="navigateTo('suppliers', this)"><span>👤 Suppliers</span></a></li>
+                    <li><a onclick="navigateTo('customers', this)"><span>👥 Customers</span></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title open" onclick="toggleNavSection(this)">
+                    <span class="arrow">▶</span> INVENTORY
+                </div>
+                <ul class="nav-items open" id="inventoryNav">
+                    <li><a onclick="navigateTo('inventoryProduct', this)"><span>📦 Products</span></a></li>
+                    <li><a onclick="navigateTo('inventoryCategory', this)"><span>📁 Categories</span></a></li>
+                    <li><a onclick="navigateTo('inventoryBrand', this)"><span>🏷️ Brands</span></a></li>
+                    <li><a onclick="navigateTo('inventoryArticle', this)"><span>📄 Articles</span></a></li>
+                    <li><a onclick="navigateTo('inventoryColor', this)"><span>🎨 Colors</span></a></li>
+                    <li><a onclick="navigateTo('inventoryUnit', this)"><span>📏 Units</span></a></li>
+                    <li><a onclick="navigateTo('stockEntry', this)"><span>📥 Stock Entry</span></a></li>
+                    <li><a onclick="navigateTo('inventoryTransfer', this)"><span>🔄 Transfer</span></a></li>
+                    <li><a onclick="navigateTo('inventoryMovement', this)"><span>📋 Movement</span></a></li>
+                    <li><a onclick="navigateTo('inventoryLocations', this)"><span>📍 Locations</span></a></li>
+                    <li><a onclick="navigateTo('stockCheck', this)"><span>🔍 Stock Check</span></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title open" onclick="toggleNavSection(this)">
+                    <span class="arrow">▶</span> SETTINGS
+                </div>
+                <ul class="nav-items open">
+                    <li><a onclick="navigateTo('companySettings', this)"><span>🏢 Settings</span></a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="sidebar-footer">© 2025 SalesPro ERP v3.0</div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-content" id="mainContent">
+        <div class="page active" id="page-dashboard">
+            <div class="page-header"><h1>📊 Dashboard</h1><span class="badge">Live Overview</span></div>
+            <div class="card" id="dashboardCard"></div>
+        </div>
+        <div class="page" id="page-saleQuotation">
+            <div class="page-header"><h1>📄 Sale Quotation</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Quotation')">➕ New Quotation</button></div>
+            <div class="card" id="quotationCard"></div>
+        </div>
+        <div class="page" id="page-saleOrder">
+            <div class="page-header"><h1>📋 Sale Order</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Order')">➕ New Order</button></div>
+            <div class="card" id="orderCard"></div>
+        </div>
+        <div class="page" id="page-salesTaxInvoice">
+            <div class="page-header"><h1>🧾 Sales Tax Invoice</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Invoice')">➕ New Invoice</button></div>
+            <div class="card" id="invoiceCard"></div>
+        </div>
+        <div class="page" id="page-dispatchNote">
+            <div class="page-header"><h1>🚚 Dispatch Note</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Dispatch Note')">➕ New Dispatch</button></div>
+            <div class="card" id="dispatchCard"></div>
+        </div>
+        <div class="page" id="page-goodsReturn">
+            <div class="page-header"><h1>↩️ Goods Return Note</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Goods Return')">➕ New Return</button></div>
+            <div class="card" id="goodsReturnCard"></div>
+        </div>
+        <div class="page" id="page-customers">
+            <div class="page-header"><h1>👥 Customers</h1><button class="btn btn-primary" onclick="addCustomer()">➕ Add Customer</button></div>
+            <div class="card" id="customersCard"></div>
+        </div>
+        <div class="page" id="page-suppliers">
+            <div class="page-header"><h1>👤 Suppliers</h1><button class="btn btn-primary" onclick="addSupplier()">➕ Add Supplier</button></div>
+            <div class="card" id="suppliersCard"></div>
+        </div>
+        <div class="page" id="page-inventoryProduct">
+            <div class="page-header"><h1>📦 Product Master</h1><span class="badge">Inventory</span></div>
+            <div class="card" id="inventoryCard"></div>
+        </div>
+        <div class="page" id="page-inventoryCategory">
+            <div class="page-header"><h1>📁 Categories</h1><span class="badge">Setup</span></div>
+            <div class="card" id="inventoryCategoryCard"></div>
+        </div>
+        <div class="page" id="page-inventoryBrand">
+            <div class="page-header"><h1>🏷️ Brands</h1><span class="badge">Setup</span></div>
+            <div class="card" id="inventoryBrandCard"></div>
+        </div>
+        <div class="page" id="page-inventoryArticle">
+            <div class="page-header"><h1>📄 Articles</h1><span class="badge">Setup</span></div>
+            <div class="card" id="inventoryArticleCard"></div>
+        </div>
+        <div class="page" id="page-inventoryColor">
+            <div class="page-header"><h1>🎨 Colors</h1><span class="badge">Setup</span></div>
+            <div class="card" id="inventoryColorCard"></div>
+        </div>
+        <div class="page" id="page-inventoryUnit">
+            <div class="page-header"><h1>📏 Units</h1><span class="badge">Setup</span></div>
+            <div class="card" id="inventoryUnitCard"></div>
+        </div>
+        <div class="page" id="page-stockEntry">
+            <div class="page-header"><h1>📥 Stock Entry</h1><span class="badge">IN</span></div>
+            <div class="card" id="stockEntryCard"></div>
+        </div>
+        <div class="page" id="page-inventoryTransfer">
+            <div class="page-header"><h1>🔄 Inventory Transfer</h1><span class="badge">Move</span></div>
+            <div class="card" id="transferCard"></div>
+        </div>
+        <div class="page" id="page-inventoryMovement">
+            <div class="page-header"><h1>📋 Inventory Movement</h1><span class="badge">History</span></div>
+            <div class="card" id="movementCard"></div>
+        </div>
+        <div class="page" id="page-inventoryLocations">
+            <div class="page-header"><h1>📍 Locations</h1><button class="btn btn-primary" onclick="addLocation()">➕ Add Location</button></div>
+            <div class="card" id="locationsCard"></div>
+        </div>
+        <div class="page" id="page-stockCheck">
+            <div class="page-header"><h1>🔍 Stock Check</h1><span class="badge">Filter</span></div>
+            <div class="card" id="stockCheckCard"></div>
+        </div>
+        <div class="page" id="page-purchaseOrder">
+            <div class="page-header"><h1>📄 Purchase Order</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Purchase Order')">➕ New PO</button></div>
+            <div class="card" id="purchaseOrderCard"></div>
+        </div>
+        <div class="page" id="page-goodsReceipt">
+            <div class="page-header"><h1>📥 Goods Receipt / GRN</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Goods Receipt')">➕ New GRN</button></div>
+            <div class="card" id="goodsReceiptCard"></div>
+        </div>
+        <div class="page" id="page-purchaseInvoice">
+            <div class="page-header"><h1>🧾 Purchase Invoice</h1><button class="btn btn-primary" onclick="openNewEntryPopup('Purchase Invoice')">➕ New Invoice</button></div>
+            <div class="card" id="purchaseInvoiceCard"></div>
+        </div>
+        <div class="page" id="page-companySettings">
+            <div class="page-header"><h1>🏢 Company Settings</h1><span class="badge">Setup</span></div>
+            <div class="card" id="settingsCard"></div>
+        </div>
+    </main>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        // ==================== COMPLETE ORIGINAL JAVASCRIPT ====================
+        // Data Store
+        function getData(key, defaultValue) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : defaultValue;
+        }
+        function setData(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+        function initData() {
+            if (!localStorage.getItem('inventory_categories')) { setData('inventory_categories', [{ id: 1, code: 'CAT-001', name: 'CATEGORY A' }, { id: 2, code: 'CAT-002', name: 'CATEGORY B' }, { id: 3, code: 'CAT-003', name: 'CATEGORY C' }]); }
+            if (!localStorage.getItem('inventory_brands')) { setData('inventory_brands', [{ id: 1, code: 'BRD-001', categoryId: 1, name: 'BRAND X' }, { id: 2, code: 'BRD-002', categoryId: 1, name: 'BRAND Y' }, { id: 3, code: 'BRD-003', categoryId: 2, name: 'BRAND Z' }]); }
+            if (!localStorage.getItem('inventory_articles')) { setData('inventory_articles', [{ id: 1, code: 'ART-001', brandId: 1, name: 'ARTICLE 100', price: 150, unitId: 1 }, { id: 2, code: 'ART-002', brandId: 1, name: 'ARTICLE 200', price: 250, unitId: 2 }, { id: 3, code: 'ART-003', brandId: 2, name: 'ARTICLE 300', price: 350, unitId: 1 }]); }
+            if (!localStorage.getItem('inventory_colors')) { setData('inventory_colors', [{ id: 1, code: 'CLR-001', articleId: 1, name: 'RED' }, { id: 2, code: 'CLR-002', articleId: 1, name: 'BLUE' }, { id: 3, code: 'CLR-003', articleId: 2, name: 'GREEN' }, { id: 4, code: 'CLR-004', articleId: 3, name: 'BLACK' }]); }
+            if (!localStorage.getItem('inventory_units')) { setData('inventory_units', [{ id: 1, code: 'UNT-001', name: 'PCS' }, { id: 2, code: 'UNT-002', name: 'KG' }, { id: 3, code: 'UNT-003', name: 'METER' }]); }
+            if (!localStorage.getItem('customers')) { setData('customers', [{ id: 1, name: 'CUSTOMER A', phone: '0300-1234567', email: 'a@email.com', address: 'Lahore' }, { id: 2, name: 'CUSTOMER B', phone: '0300-7654321', email: 'b@email.com', address: 'Karachi' }, { id: 3, name: 'CUSTOMER C', phone: '0300-1112233', email: 'c@email.com', address: 'Islamabad' }]); }
+            if (!localStorage.getItem('suppliers')) { setData('suppliers', [{ id: 1, name: 'SUPPLIER A', phone: '042-1234567', email: 'sa@email.com', address: 'Lahore' }, { id: 2, name: 'SUPPLIER B', phone: '021-7654321', email: 'sb@email.com', address: 'Karachi' }, { id: 3, name: 'SUPPLIER C', phone: '051-1112233', email: 'sc@email.com', address: 'Islamabad' }]); }
+            if (!localStorage.getItem('shipping_options')) { setData('shipping_options', ['CAMEL', 'CHERRY', 'SWALLOW BRASS', 'YAMAKOU']); }
+            if (!localStorage.getItem('cash_accounts')) { setData('cash_accounts', ['Petty Cash account', 'Main Cash account']); }
+            if (!localStorage.getItem('saved_quotations')) setData('saved_quotations', []);
+            if (!localStorage.getItem('saved_orders')) setData('saved_orders', []);
+            if (!localStorage.getItem('saved_invoices')) setData('saved_invoices', []);
+            if (!localStorage.getItem('saved_dispatch_notes')) setData('saved_dispatch_notes', []);
+            if (!localStorage.getItem('saved_goods_returns')) setData('saved_goods_returns', []);
+            if (!localStorage.getItem('saved_purchase_orders')) setData('saved_purchase_orders', []);
+            if (!localStorage.getItem('saved_goods_receipts')) setData('saved_goods_receipts', []);
+            if (!localStorage.getItem('saved_purchase_invoices')) setData('saved_purchase_invoices', []);
+            if (!localStorage.getItem('stock_entries')) setData('stock_entries', []);
+            if (!localStorage.getItem('inventory_transfers')) setData('inventory_transfers', []);
+            if (!localStorage.getItem('inventory_products')) { setData('inventory_products', []); }
+            if (!localStorage.getItem('inventory_locations')) { setData('inventory_locations', [{ id: 1, name: 'Main Warehouse', address: 'Mumbai, MH' }, { id: 2, name: 'Shop Floor', address: 'Mumbai, MH' }, { id: 3, name: 'Dispatch Area', address: 'Mumbai, MH' }]); }
+            if (!localStorage.getItem('company_settings')) { setData('company_settings', { companyName: 'YOUR COMPANY NAME', streetAddress: '123 Business Street', cityStateZip: 'Mumbai, MH 400001', phone: '022-12345678', fax: '022-12345679', website: 'www.yourcompany.com', bankDetails: 'Make all checks payable to Your Company Name\nBank: XYZ Bank, Account: 1234567890', contactPerson: 'Accounts Department', contactPhone: '022-12345678', contactEmail: 'accounts@yourcompany.com', taxRate: 18, terms: '1. Total payment due in 30 days\n2. Please include the invoice number on your check' }); }
+        }
+        initData();
+
+        let currentPage = 'dashboard';
+        let editingInventoryItem = null;
+
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function getCategories() { return getData('inventory_categories', []); }
+        function getBrands() { return getData('inventory_brands', []); }
+        function getArticles() { return getData('inventory_articles', []); }
+        function getColors() { return getData('inventory_colors', []); }
+        function getUnits() { return getData('inventory_units', []); }
+        function getCustomers() { return getData('customers', []); }
+        function getSuppliers() { return getData('suppliers', []); }
+        function getShippingOptions() { return getData('shipping_options', []); }
+        function getLocations() { return getData('inventory_locations', []); }
+        function getCashAccounts() { return getData('cash_accounts', []); }
+        function getProducts() { return getData('inventory_products', []); }
+        function getProductById(id) { return getProducts().find(p => p.id == id); }
+
+        function generateProductCode() {
+            const products = getProducts();
+            const count = products.length + 1;
+            return 'PROD-' + String(count).padStart(4, '0');
+        }
+
+        function getProductFullName(product) {
+            if (!product) return 'N/A';
+            const cat = getCategories().find(c => c.id == product.categoryId);
+            const brand = getBrands().find(b => b.id == product.brandId);
+            const art = getArticles().find(a => a.id == product.articleId);
+            const col = getColors().find(c => c.id == product.colorId);
+            const unit = getUnits().find(u => u.id == product.unitId);
+            return { category: cat?.name || '—', brand: brand?.name || '—', article: art?.name || '—', color: col?.name || '—', unit: unit?.name || '—', fullName: [cat?.name, brand?.name, art?.name, col?.name].filter(Boolean).join(' → ') };
+        }
+
+        function getBrandsByCategory(catId) { return getBrands().filter(b => b.categoryId == catId); }
+        function getArticlesByBrand(brandId) { return getArticles().filter(a => a.brandId == brandId); }
+        function getColorsByArticle(articleId) { return getColors().filter(c => c.articleId == articleId); }
+        function getUnitById(unitId) { return getUnits().find(u => u.id == unitId) || { name: 'N/A', code: '' }; }
+
+        function getStorageKey(type) {
+            const map = { 'Quotation': 'saved_quotations', 'Order': 'saved_orders', 'Invoice': 'saved_invoices', 'Dispatch Note': 'saved_dispatch_notes', 'Goods Return': 'saved_goods_returns', 'Purchase Order': 'saved_purchase_orders', 'Goods Receipt': 'saved_goods_receipts', 'Purchase Invoice': 'saved_purchase_invoices' };
+            return map[type] || 'saved_documents';
+        }
+
+        function getCompanySettings() {
+            return getData('company_settings', { companyName: 'YOUR COMPANY NAME', streetAddress: '123 Business Street', cityStateZip: 'Mumbai, MH 400001', phone: '022-12345678', fax: '022-12345679', website: 'www.yourcompany.com', bankDetails: 'Make all checks payable to Your Company Name\nBank: XYZ Bank, Account: 1234567890', contactPerson: 'Accounts Department', contactPhone: '022-12345678', contactEmail: 'accounts@yourcompany.com', taxRate: 18, terms: '1. Total payment due in 30 days\n2. Please include the invoice number on your check' });
+        }
+
+        function toggleNavSection(titleElement) {
+            const allSections = document.querySelectorAll('.nav-section-title');
+            const allItems = document.querySelectorAll('.nav-items');
+            allSections.forEach(section => section.classList.remove('open'));
+            allItems.forEach(items => items.classList.remove('open'));
+            titleElement.classList.add('open');
+            titleElement.nextElementSibling.classList.add('open');
+        }
+
+        function navigateTo(page, linkElement) {
+            currentPage = page;
+            document.querySelectorAll('.nav-items li a').forEach(a => a.classList.remove('active'));
+            if (linkElement) linkElement.classList.add('active');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const pageMap = {
+                'dashboard': 'page-dashboard', 'saleQuotation': 'page-saleQuotation', 'saleOrder': 'page-saleOrder',
+                'salesTaxInvoice': 'page-salesTaxInvoice', 'dispatchNote': 'page-dispatchNote', 'goodsReturn': 'page-goodsReturn',
+                'customers': 'page-customers', 'suppliers': 'page-suppliers',
+                'inventoryProduct': 'page-inventoryProduct', 'inventoryCategory': 'page-inventoryCategory',
+                'inventoryBrand': 'page-inventoryBrand', 'inventoryArticle': 'page-inventoryArticle',
+                'inventoryColor': 'page-inventoryColor', 'inventoryUnit': 'page-inventoryUnit',
+                'stockEntry': 'page-stockEntry', 'inventoryTransfer': 'page-inventoryTransfer',
+                'inventoryMovement': 'page-inventoryMovement', 'inventoryLocations': 'page-inventoryLocations',
+                'stockCheck': 'page-stockCheck',
+                'purchaseOrder': 'page-purchaseOrder', 'goodsReceipt': 'page-goodsReceipt',
+                'purchaseInvoice': 'page-purchaseInvoice', 'companySettings': 'page-companySettings'
+            };
+            const targetPage = document.getElementById(pageMap[page]);
+            if (targetPage) targetPage.classList.add('active');
+            renderCurrentPage();
+        }
+
+        function renderCurrentPage() {
+            switch (currentPage) {
+                case 'dashboard': renderDashboard(); break;
+                case 'saleQuotation': renderSaleRecords('quotationCard', 'Quotation'); break;
+                case 'saleOrder': renderSaleRecords('orderCard', 'Order'); break;
+                case 'salesTaxInvoice': renderSaleRecords('invoiceCard', 'Invoice'); break;
+                case 'dispatchNote': renderSaleRecords('dispatchCard', 'Dispatch Note'); break;
+                case 'goodsReturn': renderSaleRecords('goodsReturnCard', 'Goods Return'); break;
+                case 'customers': renderCustomersPage(); break;
+                case 'suppliers': renderSuppliersPage(); break;
+                case 'inventoryProduct': renderInventoryPage(); break;
+                case 'inventoryCategory': renderInventoryCategoryPage(); break;
+                case 'inventoryBrand': renderInventoryBrandPage(); break;
+                case 'inventoryArticle': renderInventoryArticlePage(); break;
+                case 'inventoryColor': renderInventoryColorPage(); break;
+                case 'inventoryUnit': renderInventoryUnitPage(); break;
+                case 'stockEntry': renderStockEntryPage(); break;
+                case 'inventoryTransfer': renderTransferPage(); break;
+                case 'inventoryMovement': renderMovementPage(); break;
+                case 'inventoryLocations': renderLocationsPage(); break;
+                case 'stockCheck': renderStockCheckPage(); break;
+                case 'purchaseOrder': renderSaleRecords('purchaseOrderCard', 'Purchase Order'); break;
+                case 'goodsReceipt': renderSaleRecords('goodsReceiptCard', 'Goods Receipt'); break;
+                case 'purchaseInvoice': renderSaleRecords('purchaseInvoiceCard', 'Purchase Invoice'); break;
+                case 'companySettings': renderCompanySettings(); break;
+            }
+        }
+
+        function renderDashboard() {
+            const card = document.getElementById('dashboardCard');
+            if (!card) return;
+            const quotations = getData('saved_quotations', []);
+            const orders = getData('saved_orders', []);
+            const invoices = getData('saved_invoices', []);
+            const dispatches = getData('saved_dispatch_notes', []);
+            const customers = getCustomers();
+            const stockEntries = getData('stock_entries', []);
+            const today = new Date().toDateString();
+            const todayQuotations = quotations.filter(q => new Date(q.date).toDateString() === today);
+            const todayOrders = orders.filter(o => new Date(o.date).toDateString() === today);
+
+            card.innerHTML = `
+                <div class="card-title">📊 Business Overview</div>
+                <div class="dashboard-grid">
+                    <div class="dash-card quotation" onclick="navigateTo('saleQuotation')">
+                        <span class="icon">📄</span>
+                        <div class="count">${quotations.length}</div>
+                        <div class="label">Total Quotations</div>
+                        <small style="color:#64748b;">Today: ${todayQuotations.length}</small>
+                    </div>
+                    <div class="dash-card order" onclick="navigateTo('saleOrder')">
+                        <span class="icon">📋</span>
+                        <div class="count">${orders.length}</div>
+                        <div class="label">Total Orders</div>
+                        <small style="color:#64748b;">Today: ${todayOrders.length}</small>
+                    </div>
+                    <div class="dash-card invoice" onclick="navigateTo('salesTaxInvoice')">
+                        <span class="icon">🧾</span>
+                        <div class="count">${invoices.length}</div>
+                        <div class="label">Total Invoices</div>
+                        <small style="color:#64748b;">Amount: ₹${invoices.reduce((s,i) => s + (i.grandTotal||0), 0).toLocaleString('en-IN', {maximumFractionDigits:0})}</small>
+                    </div>
+                    <div class="dash-card dispatch" onclick="navigateTo('dispatchNote')">
+                        <span class="icon">🚚</span>
+                        <div class="count">${dispatches.length}</div>
+                        <div class="label">Dispatches</div>
+                    </div>
+                    <div class="dash-card customer" onclick="navigateTo('customers')">
+                        <span class="icon">👥</span>
+                        <div class="count">${customers.length}</div>
+                        <div class="label">Customers</div>
+                    </div>
+                    <div class="dash-card stock" onclick="navigateTo('stockEntry')">
+                        <span class="icon">📥</span>
+                        <div class="count">${stockEntries.length}</div>
+                        <div class="label">Stock Entries</div>
+                    </div>
+                </div>
+                <div class="card-title" style="margin-top:20px;">📋 Recent Quotations</div>
+                <div class="table-container">
+                    <table class="records-table">
+                        <thead><tr><th>#</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th></tr></thead>
+                        <tbody>
+                            ${quotations.slice(-5).reverse().map((q,i) => `
+                                <tr style="cursor:pointer;" ondblclick="editRecord('Quotation','${q.id}')" onclick="viewRecord('Quotation','${q.id}')" title="Click to view | Double-click to edit">
+                                    <td>${i+1}</td>
+                                    <td>${new Date(q.date).toLocaleDateString()}</td>
+                                    <td>${q.customer||'N/A'}</td>
+                                    <td>${q.items?.length||0} items</td>
+                                    <td><strong>₹${(q.grandTotal||0).toLocaleString('en-IN', {minimumFractionDigits:2})}</strong></td>
+                                </tr>
+                            `).join('')}
+                            ${quotations.length===0?'<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">📭 No quotations yet</td></tr>':''}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderSaleRecords(cardId, type) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            const storageKey = getStorageKey(type);
+            const savedRecords = getData(storageKey, []);
+            let html = `
+                <div class="records-section">
+                    <div class="section-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <h3 style="margin:0;">📋 Saved ${type}s <span class="badge-count">${savedRecords.length}</span></h3>
+                        <small style="color:#94a3b8;">💡 Double-click row to edit | Click 👁️ to view</small>
+                    </div>
+                    <div class="table-container">
+                        <table class="records-table">
+                            <thead><tr><th>#</th><th>Date</th><th>${type.includes('Purchase')||type.includes('Goods Receipt')?'Supplier':'Customer'}</th><th>Items</th><th>Shipping</th><th>Total</th><th>Actions</th></tr></thead>
+                            <tbody>
+            `;
+            if (savedRecords.length === 0) {
+                html += `<tr><td colspan="7" style="text-align:center;padding:30px;color:#94a3b8;">📭 No ${type}s saved yet. Click <strong>"New ${type}"</strong> to create.</td></tr>`;
+            } else {
+                savedRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach((rec, idx) => {
+                    const date = new Date(rec.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const itemCount = rec.items ? rec.items.length : 0;
+                    const recId = rec.id;
+                    let convertBtn = '';
+                    if (type === 'Quotation') { convertBtn = `<button class="btn-convert-sm" onclick="event.stopPropagation(); quickConvert('Quotation','${recId}')" title="Convert to Order">📋</button>`; }
+                    else if (type === 'Order') { convertBtn = `<button class="btn-convert-sm" onclick="event.stopPropagation(); quickConvert('Order','${recId}')" title="Convert to Invoice">🧾</button>`; }
+                    else if (type === 'Purchase Order') { convertBtn = `<button class="btn-convert-sm" onclick="event.stopPropagation(); quickConvert('Purchase Order','${recId}')" title="Create GRN">📥</button>`; }
+                    else if (type === 'Goods Receipt') { convertBtn = `<button class="btn-convert-sm" onclick="event.stopPropagation(); quickConvert('Goods Receipt','${recId}')" title="Create Invoice">🧾</button>`; }
+                    html += `
+                        <tr ondblclick="editRecord('${type}','${recId}')" style="cursor:pointer;" title="🖱️ Double-click to edit">
+                            <td>${idx + 1}</td>
+                            <td>${date}</td>
+                            <td>${rec.customer || 'N/A'}</td>
+                            <td>${itemCount} item(s)</td>
+                            <td>${rec.shipping || 'N/A'}</td>
+                            <td><strong>₹${(rec.grandTotal || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</strong></td>
+                            <td class="actions">
+                                <button class="btn-icon btn-view" onclick="event.stopPropagation();viewRecord('${type}','${recId}')" title="View/Print">👁️</button>
+                                <button class="btn-icon btn-edit" onclick="event.stopPropagation();editRecord('${type}','${recId}')" title="Edit">✏️</button>
+                                <button class="btn-icon btn-delete" onclick="event.stopPropagation();deleteRecord('${type}','${recId}')" title="Delete">🗑️</button>
+                                ${convertBtn}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            html += `</tbody></table></div></div>`;
+            card.innerHTML = html;
+            card.dataset.type = type;
+        }
+
+        function toggleDropdownList(listId, show) {
+            const list = document.getElementById(listId);
+            if (list) { if (show) { list.classList.add('show'); list.querySelectorAll('.option').forEach(o => o.style.display = ''); } else { list.classList.remove('show'); } }
+        }
+
+        function filterDropdownList(listId, query) {
+            const list = document.getElementById(listId);
+            if (!list) return;
+            list.classList.add('show');
+            const options = list.querySelectorAll('.option');
+            const q = query.toLowerCase().trim();
+            options.forEach(opt => { opt.style.display = opt.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+        }
+
+        function selectDropdownOption(hiddenId, value, searchId, text) {
+            document.getElementById(hiddenId).value = value;
+            document.getElementById(searchId).value = text;
+        }
+
+        function openNewEntryPopup(type, editData = null) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.id = 'entryModal';
+            const categories = getCategories();
+            const customers = getCustomers();
+            const suppliers = getSuppliers();
+            const shippingOpts = getShippingOptions();
+            const locations = getLocations();
+            const cashAccounts = getCashAccounts();
+            const isEdit = editData !== null;
+            const popupId = (type.replace(/\s+/g, '_') + '_popup');
+
+            overlay.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-header">
+                        <h2>${isEdit ? '✏️ Edit' : '➕ New'} ${type}</h2>
+                        <button class="modal-close" onclick="closeModal()">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-title">${type} Details</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>${type.includes('Purchase') || type.includes('Goods Receipt') ? 'Supplier *' : 'Customer *'}</label>
+                                <select id="${popupId}_customer">
+                                    <option value="">-- Select --</option>
+                                    ${(type.includes('Purchase') || type.includes('Goods Receipt') ? suppliers : customers).map(c => `<option value="${c.id}" ${isEdit && editData.customerId == c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <div class="searchable-dropdown">
+                                    <input type="text" class="search-input" id="${popupId}_category_search" placeholder="🔍 Search..." autocomplete="off" onfocus="toggleDropdownList('${popupId}_category_list', true)" oninput="filterDropdownList('${popupId}_category_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('${popupId}_category_list',false),200)">
+                                    <input type="hidden" id="${popupId}_category" value="">
+                                    <div class="dropdown-list" id="${popupId}_category_list">
+                                        ${categories.map(c => `<div class="option" onclick="selectDropdownOption('${popupId}_category','${c.id}','${popupId}_category_search','${c.name}');onPopupCategoryChange('${popupId}')">${c.code||''} ${c.name}</div>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Brand *</label>
+                                <div class="searchable-dropdown">
+                                    <input type="text" class="search-input" id="${popupId}_brand_search" placeholder="🔍 Search..." autocomplete="off" disabled onfocus="toggleDropdownList('${popupId}_brand_list', true)" oninput="filterDropdownList('${popupId}_brand_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('${popupId}_brand_list',false),200)">
+                                    <input type="hidden" id="${popupId}_brand" value="">
+                                    <div class="dropdown-list" id="${popupId}_brand_list"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Article *</label>
+                                <div class="searchable-dropdown">
+                                    <input type="text" class="search-input" id="${popupId}_article_search" placeholder="🔍 Search..." autocomplete="off" disabled onfocus="toggleDropdownList('${popupId}_article_list', true)" oninput="filterDropdownList('${popupId}_article_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('${popupId}_article_list',false),200)">
+                                    <input type="hidden" id="${popupId}_article" value="">
+                                    <div class="dropdown-list" id="${popupId}_article_list"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Color/Finish</label>
+                                <div class="searchable-dropdown">
+                                    <input type="text" class="search-input" id="${popupId}_color_search" placeholder="🔍 Search..." autocomplete="off" disabled onfocus="toggleDropdownList('${popupId}_color_list', true)" oninput="filterDropdownList('${popupId}_color_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('${popupId}_color_list',false),200)">
+                                    <input type="hidden" id="${popupId}_color" value="">
+                                    <div class="dropdown-list" id="${popupId}_color_list"></div>
+                                </div>
+                            </div>
+                            <div class="form-group small"><label>Unit</label><input type="text" id="${popupId}_unit" readonly placeholder="Auto"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group small"><label>Quantity</label><input type="number" id="${popupId}_qty" value="1" min="1" step="any" onchange="calcPopupTotal('${popupId}')"></div>
+                            <div class="form-group small"><label>Price</label><input type="number" id="${popupId}_price" value="0" step="any" onchange="calcPopupTotal('${popupId}')"></div>
+                            <div class="form-group small"><label>Discount</label><input type="number" id="${popupId}_discount" value="0" step="any" onchange="calcPopupTotal('${popupId}')"></div>
+                            <div class="form-group small"><label>Total</label><input type="text" id="${popupId}_itemTotal" value="0.00" readonly style="font-weight:bold;"></div>
+                            <div class="form-group" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="addPopupItem('${popupId}')">➕ Add Item</button></div>
+                        </div>
+                        <div class="table-container">
+                            <table><thead><tr><th>#</th><th>Category</th><th>Brand</th><th>Article</th><th>Color</th><th>Unit</th><th>Qty</th><th>Price</th><th>Discount</th><th>Total</th><th>Action</th></tr></thead>
+                            <tbody id="${popupId}_itemsBody"></tbody></table>
+                        </div>
+                        <div class="bottom-row" style="display:flex;flex-wrap:wrap;gap:15px;align-items:center;justify-content:space-between;margin-top:15px;padding-top:15px;border-top:2px solid var(--border);">
+                            <div class="form-group"><label>Shipping</label><select id="${popupId}_shipping"><option value="">-- Select --</option>${shippingOpts.map(s => `<option value="${s}" ${isEdit && editData.shipping == s ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
+                            <div><span>Amount Total: </span><span class="amount-total" style="font-size:1.5rem;font-weight:700;color:var(--primary);" id="${popupId}_grandTotal">0.00</span></div>
+                            <button class="btn btn-outline" onclick="updatePopupGrandTotal('${popupId}')">🔄 Update</button>
+                        </div>
+                        <div class="form-row" style="margin-top:10px;">
+                            <div class="checkbox-group" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="${popupId}_cashPayment" checked><label>Cash payment</label></div>
+                            <div class="form-group"><label>Deliver from Location *</label><select id="${popupId}_location" onchange="onPopupLocationChange('${popupId}')" ${isEdit && editData.location ? 'disabled' : ''}>${getData('inventory_locations', []).map(l => `<option value="${l.name}" ${(isEdit && editData.location === l.name) ? 'selected' : ''}>${l.name}</option>`).join('')}</select></div>
+                            <div class="form-group"><label>Cash account</label><select>${cashAccounts.map(a => `<option>${a}</option>`).join('')}</select></div>
+                        </div>
+                        <div id="${popupId}_liveStock" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;flex:0 0 100%;margin-top:4px;"><strong>📊 Current Stock: </strong><span id="${popupId}_liveStockCount" style="font-weight:700;">0</span></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="closeModal()">❌ Cancel</button>
+                        <button class="btn btn-success" onclick="savePopupDocument('${type}', '${popupId}', '${isEdit ? editData.id : ''}')">💾 ${isEdit ? 'Update' : 'Save'} ${type}</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            window[`${popupId}_items`] = [];
+            if (isEdit && editData.items) {
+                window[`${popupId}_items`] = JSON.parse(JSON.stringify(editData.items));
+                renderPopupItemsTable(popupId);
+                updatePopupGrandTotal(popupId);
+                // Pre-fill fields for edit
+                if (editData.customerId) { document.getElementById(`${popupId}_customer`).value = editData.customerId; }
+                if (editData.shipping) { document.getElementById(`${popupId}_shipping`).value = editData.shipping; }
+                if (editData.location) { document.getElementById(`${popupId}_location`).value = editData.location; }
+            }
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+            document.addEventListener('keydown', function escHandler(e) { if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', escHandler); } });
+        }
+
+        function closeModal() {
+            const m = document.getElementById('entryModal');
+            if (m) { m.style.animation = 'fadeOut 0.3s ease'; setTimeout(() => m.remove(), 300); }
+        }
+
+        function onPopupCategoryChange(popupId) {
+            const catId = document.getElementById(`${popupId}_category`).value;
+            const brandSearch = document.getElementById(`${popupId}_brand_search`);
+            const brandHidden = document.getElementById(`${popupId}_brand`);
+            const brandList = document.getElementById(`${popupId}_brand_list`);
+            const artSearch = document.getElementById(`${popupId}_article_search`);
+            const artHidden = document.getElementById(`${popupId}_article`);
+            const artList = document.getElementById(`${popupId}_article_list`);
+            const colSearch = document.getElementById(`${popupId}_color_search`);
+            const colHidden = document.getElementById(`${popupId}_color`);
+            const colList = document.getElementById(`${popupId}_color_list`);
+            const unitInp = document.getElementById(`${popupId}_unit`);
+            const priceInp = document.getElementById(`${popupId}_price`);
+            const liveDiv = document.getElementById(`${popupId}_liveStock`);
+            
+            brandSearch.value = ''; brandHidden.value = ''; brandList.innerHTML = '';
+            artSearch.value = ''; artHidden.value = ''; artList.innerHTML = '';
+            colSearch.value = ''; colHidden.value = ''; colList.innerHTML = '';
+            unitInp.value = ''; priceInp.value = '0';
+            if(liveDiv) liveDiv.style.display = 'none';
+            
+            brandSearch.disabled = !catId;
+            artSearch.disabled = true;
+            colSearch.disabled = true;
+            
+            if (catId) {
+                const products = getProducts();
+                const brandIds = [...new Set(products.filter(p => p.categoryId == catId).map(p => p.brandId))];
+                const brands = getBrands().filter(b => brandIds.includes(b.id));
+                if (brands.length === 0) {
+                    getBrandsByCategory(catId).forEach(b => { brandList.innerHTML += `<div class="option" onclick="selectDropdownOption('${popupId}_brand','${b.id}','${popupId}_brand_search','${b.name}');onPopupBrandChange('${popupId}')">${b.code||''} ${b.name}</div>`; });
+                } else {
+                    brands.forEach(b => { brandList.innerHTML += `<div class="option" onclick="selectDropdownOption('${popupId}_brand','${b.id}','${popupId}_brand_search','${b.name}');onPopupBrandChange('${popupId}')">${b.code||''} ${b.name}</div>`; });
+                }
+            }
+            calcPopupTotal(popupId);
+        }
+
+        function onPopupBrandChange(popupId) {
+            const brandId = document.getElementById(`${popupId}_brand`).value;
+            const artSearch = document.getElementById(`${popupId}_article_search`);
+            const artHidden = document.getElementById(`${popupId}_article`);
+            const artList = document.getElementById(`${popupId}_article_list`);
+            const colSearch = document.getElementById(`${popupId}_color_search`);
+            const colHidden = document.getElementById(`${popupId}_color`);
+            const colList = document.getElementById(`${popupId}_color_list`);
+            const unitInp = document.getElementById(`${popupId}_unit`);
+            const priceInp = document.getElementById(`${popupId}_price`);
+            const liveDiv = document.getElementById(`${popupId}_liveStock`);
+            
+            artSearch.value = ''; artHidden.value = ''; artList.innerHTML = '';
+            colSearch.value = ''; colHidden.value = ''; colList.innerHTML = '';
+            unitInp.value = ''; priceInp.value = '0';
+            if(liveDiv) liveDiv.style.display = 'none';
+            
+            artSearch.disabled = !brandId;
+            colSearch.disabled = true;
+            
+            if (brandId) {
+                const products = getProducts();
+                const articleIds = [...new Set(products.filter(p => p.brandId == brandId).map(p => p.articleId))];
+                const articles = getArticles().filter(a => articleIds.includes(a.id));
+                if (articles.length === 0) {
+                    getArticlesByBrand(brandId).forEach(a => { artList.innerHTML += `<div class="option" onclick="selectDropdownOption('${popupId}_article','${a.id}','${popupId}_article_search','${a.name}');onPopupArticleChange('${popupId}')" data-unit="${a.unitId}" data-price="${a.price}">${a.code||''} ${a.name}</div>`; });
+                } else {
+                    articles.forEach(a => { const prod = products.find(p => p.brandId == brandId && p.articleId == a.id); artList.innerHTML += `<div class="option" onclick="selectDropdownOption('${popupId}_article','${a.id}','${popupId}_article_search','${a.name}');onPopupArticleChange('${popupId}')" data-unit="${prod ? prod.unitId : a.unitId}" data-price="${prod ? prod.salePrice : a.price}">${a.code||''} ${a.name}</div>`; });
+                }
+            }
+            calcPopupTotal(popupId);
+        }
+
+        function onPopupArticleChange(popupId) {
+            const artId = document.getElementById(`${popupId}_article`).value;
+            const catId = document.getElementById(`${popupId}_category`).value;
+            const brandId = document.getElementById(`${popupId}_brand`).value;
+            const colSearch = document.getElementById(`${popupId}_color_search`);
+            const colHidden = document.getElementById(`${popupId}_color`);
+            const colList = document.getElementById(`${popupId}_color_list`);
+            const unitInp = document.getElementById(`${popupId}_unit`);
+            const priceInp = document.getElementById(`${popupId}_price`);
+            const liveDiv = document.getElementById(`${popupId}_liveStock`);
+            
+            colSearch.value = ''; colHidden.value = ''; colList.innerHTML = '';
+            
+            if (artId) {
+                const products = getProducts();
+                const prod = products.find(p => p.categoryId == catId && p.brandId == brandId && p.articleId == artId);
+                if (prod) { unitInp.value = getUnitById(prod.unitId).name; priceInp.value = prod.salePrice; }
+                else { const opt = document.getElementById(`${popupId}_article_search`).closest('.searchable-dropdown').querySelector('.option.selected'); if (!opt) { const art = getArticles().find(a => a.id == artId); if (art) { unitInp.value = getUnitById(art.unitId).name; priceInp.value = art.price; } } }
+                
+                const colorIds = [...new Set(products.filter(p => p.categoryId == catId && p.brandId == brandId && p.articleId == artId && p.colorId).map(p => p.colorId))];
+                const colors = getColors().filter(c => colorIds.includes(c.id));
+                if (colors.length > 0) { colSearch.disabled = false; colors.forEach(c => { colList.innerHTML += `<div class="option" onclick="selectDropdownOption('${popupId}_color','${c.id}','${popupId}_color_search','${c.name}')">${c.code||''} ${c.name}</div>`; }); }
+                else { getColorsByArticle(artId).forEach(c => { colList.innerHTML += `<div class="option" onclick="selectDropdownOption('${popupId}_color','${c.id}','${popupId}_color_search','${c.name}')">${c.code||''} ${c.name}</div>`; }); colSearch.disabled = false; }
+                updateLiveStockForArticle(popupId, artId);
+            } else { unitInp.value = ''; priceInp.value = '0'; colSearch.disabled = true; if(liveDiv) liveDiv.style.display = 'none'; }
+            calcPopupTotal(popupId);
+            setTimeout(() => { onPopupLocationChange(popupId); }, 100);
+        }
+
+        function updateLiveStockForArticle(popupId, articleId) {
+            const liveDiv = document.getElementById(`${popupId}_liveStock`);
+            const liveCount = document.getElementById(`${popupId}_liveStockCount`);
+            const qtyInput = document.getElementById(`${popupId}_qty`);
+            const locationSelect = document.getElementById(`${popupId}_location`);
+            if (!articleId || !liveDiv || !liveCount) return;
+            const catId = document.getElementById(`${popupId}_category`)?.value;
+            const brandId = document.getElementById(`${popupId}_brand`)?.value;
+            const colorId = document.getElementById(`${popupId}_color`)?.value;
+            const unitVal = document.getElementById(`${popupId}_unit`)?.value;
+            const selectedLocation = locationSelect ? locationSelect.value : null;
+            if (!catId || !brandId || !articleId || !colorId || !unitVal || !selectedLocation) { liveDiv.style.display = 'none'; return; }
+            const allEntries = getData('stock_entries', []);
+            let matchingEntries = allEntries.filter(e => e.articleId == articleId && e.colorId == colorId);
+            matchingEntries = matchingEntries.filter(e => { const locName = e.locationName || ''; const locId = e.locationId; if (locName === selectedLocation) return true; const allLocs = getData('inventory_locations', []); const loc = allLocs.find(l => l.id == locId); return loc && loc.name === selectedLocation; });
+            const currentStock = matchingEntries.reduce((sum, e) => sum + (parseFloat(e.qty) || 0), 0);
+            liveDiv.style.display = 'block';
+            liveCount.textContent = currentStock;
+            if (currentStock <= 0) { liveCount.style.color = 'red'; liveDiv.style.background = '#fee2e2'; liveDiv.style.border = '1px solid #fecaca'; if (qtyInput) qtyInput.style.border = '2px solid #ef4444'; }
+            else if (currentStock < 10) { liveCount.style.color = 'orange'; liveDiv.style.background = '#fef3c7'; liveDiv.style.border = '1px solid #fde68a'; if (qtyInput) qtyInput.style.border = '2px solid #f59e0b'; }
+            else { liveCount.style.color = 'green'; liveDiv.style.background = '#f0fdf4'; liveDiv.style.border = '1px solid #bbf7d0'; if (qtyInput) qtyInput.style.border = '1.5px solid var(--border)'; }
+            const type = popupId.includes('Dispatch_Note') ? 'Dispatch Note' : popupId.includes('Invoice') ? 'Invoice' : '';
+            if ((type === 'Dispatch Note' || type === 'Invoice') && qtyInput && parseFloat(qtyInput.value) > currentStock) { showToast(`⚠️ Only ${currentStock} available at "${selectedLocation}"!`); }
+        }
+
+        function onPopupLocationChange(popupId) {
+            const articleId = document.getElementById(`${popupId}_article`)?.value;
+            if (articleId) updateLiveStockForArticle(popupId, articleId);
+        }
+
+        function calcPopupTotal(popupId) {
+            const qty = parseFloat(document.getElementById(`${popupId}_qty`)?.value) || 0;
+            const price = parseFloat(document.getElementById(`${popupId}_price`)?.value) || 0;
+            const disc = parseFloat(document.getElementById(`${popupId}_discount`)?.value) || 0;
+            const el = document.getElementById(`${popupId}_itemTotal`);
+            if (el) el.value = ((qty * price) - disc).toFixed(2);
+        }
+
+        function addPopupItem(popupId) {
+            const catId = document.getElementById(`${popupId}_category`)?.value;
+            const brandId = document.getElementById(`${popupId}_brand`)?.value;
+            const artId = document.getElementById(`${popupId}_article`)?.value;
+            const colId = document.getElementById(`${popupId}_color`)?.value;
+            const unitVal = document.getElementById(`${popupId}_unit`)?.value;
+            const qty = parseFloat(document.getElementById(`${popupId}_qty`)?.value) || 0;
+            const price = parseFloat(document.getElementById(`${popupId}_price`)?.value) || 0;
+            const disc = parseFloat(document.getElementById(`${popupId}_discount`)?.value) || 0;
+            const custId = document.getElementById(`${popupId}_customer`)?.value || '';
+            if (!artId) { showToast('⚠️ Please select an Article first'); return; }
+            if (qty <= 0) { showToast('⚠️ Quantity must be greater than 0'); return; }
+            const cats = getCategories(); const brnds = getBrands(); const arts = getArticles(); const cols = getColors();
+            const item = { category: cats.find(c => c.id == catId)?.name || '', categoryId: catId || '', brand: brnds.find(b => b.id == brandId)?.name || '', brandId: brandId || '', article: arts.find(a => a.id == artId)?.name || '', articleId: artId || '', color: cols.find(c => c.id == colId)?.name || '', colorId: colId || '', unit: unitVal, qty: qty, price: price, discount: disc, total: (qty * price) - disc, customerId: custId };
+            if (!window[`${popupId}_items`]) window[`${popupId}_items`] = [];
+            window[`${popupId}_items`].push(item);
+            renderPopupItemsTable(popupId);
+            updatePopupGrandTotal(popupId);
+            document.getElementById(`${popupId}_qty`).value = '1';
+            document.getElementById(`${popupId}_discount`).value = '0';
+            calcPopupTotal(popupId);
+            showToast(`✅ Item added! Total items: ${window[`${popupId}_items`].length}`);
+        }
+
+        function renderPopupItemsTable(popupId) {
+            const tbody = document.getElementById(`${popupId}_itemsBody`);
+            if (!tbody) return;
+            const items = window[`${popupId}_items`] || [];
+            tbody.innerHTML = items.map((item, idx) => `<tr ondblclick="editPopupItem('${popupId}', ${idx})" style="cursor:pointer;" title="🖱️ Double-click to edit"><td>${idx+1}</td><td>${item.category}</td><td>${item.brand}</td><td>${item.article}</td><td>${item.color}</td><td>${item.unit}</td><td>${item.qty}</td><td>${item.price.toFixed(2)}</td><td>${item.discount.toFixed(2)}</td><td><strong>${item.total.toFixed(2)}</strong></td><td><button class="btn btn-warning btn-sm" onclick="event.stopPropagation();editPopupItem('${popupId}',${idx})">✏️</button> <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deletePopupItem('${popupId}',${idx})">🗑️</button></td></tr>`).join('');
+        }
+
+        function editPopupItem(popupId, idx) {
+            const items = window[`${popupId}_items`] || [];
+            const item = items[idx];
+            if (!item) return;
+            items.splice(idx, 1);
+            window[`${popupId}_items`] = items;
+            if (item.customerId) { const custSelect = document.getElementById(`${popupId}_customer`); if (custSelect) custSelect.value = item.customerId; }
+            const catSearch = document.getElementById(`${popupId}_category_search`);
+            const catHidden = document.getElementById(`${popupId}_category`);
+            if (catSearch && catHidden && item.category) { const catObj = getCategories().find(c => c.name === item.category); if (catObj) { catHidden.value = catObj.id; catSearch.value = catObj.name; onPopupCategoryChange(popupId); } }
+            setTimeout(() => {
+                const brandSearch = document.getElementById(`${popupId}_brand_search`);
+                const brandHidden = document.getElementById(`${popupId}_brand`);
+                if (brandSearch && brandHidden && item.brand) { const brandObj = getBrands().find(b => b.name === item.brand); if (brandObj) { brandHidden.value = brandObj.id; brandSearch.value = brandObj.name; onPopupBrandChange(popupId); } }
+                setTimeout(() => {
+                    const artSearch = document.getElementById(`${popupId}_article_search`);
+                    const artHidden = document.getElementById(`${popupId}_article`);
+                    if (artSearch && artHidden && item.article) { const artObj = getArticles().find(a => a.name === item.article); if (artObj) { artHidden.value = artObj.id; artSearch.value = artObj.name; onPopupArticleChange(popupId); } }
+                    setTimeout(() => {
+                        const colSearch = document.getElementById(`${popupId}_color_search`);
+                        const colHidden = document.getElementById(`${popupId}_color`);
+                        if (colSearch && colHidden && item.color) { const colObj = getColors().find(c => c.name === item.color); if (colObj) { colHidden.value = colObj.id; colSearch.value = colObj.name; } }
+                        const qtyEl = document.getElementById(`${popupId}_qty`);
+                        const priceEl = document.getElementById(`${popupId}_price`);
+                        const discEl = document.getElementById(`${popupId}_discount`);
+                        const unitEl = document.getElementById(`${popupId}_unit`);
+                        if (qtyEl) qtyEl.value = item.qty;
+                        if (priceEl) priceEl.value = item.price;
+                        if (discEl) discEl.value = item.discount;
+                        if (unitEl) unitEl.value = item.unit || '';
+                        calcPopupTotal(popupId);
+                        renderPopupItemsTable(popupId);
+                        updatePopupGrandTotal(popupId);
+                        showToast('✏️ Item loaded for editing. Change values and click "Add Item"');
+                    }, 150);
+                }, 150);
+            }, 150);
+        }
+
+        function deletePopupItem(popupId, idx) {
+            const items = window[`${popupId}_items`] || [];
+            if (idx >= 0 && idx < items.length) { items.splice(idx, 1); window[`${popupId}_items`] = items; renderPopupItemsTable(popupId); updatePopupGrandTotal(popupId); showToast('🗑️ Item removed!'); }
+        }
+
+        function updatePopupGrandTotal(popupId) {
+            const items = window[`${popupId}_items`] || [];
+            const total = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+            const el = document.getElementById(`${popupId}_grandTotal`);
+            if (el) el.textContent = total.toFixed(2);
+        }
+
+        function savePopupDocument(type, popupId, editId) {
+            const items = window[`${popupId}_items`] || [];
+            if (items.length === 0) { showToast('⚠️ Please add at least one item'); return; }
+            const custId = document.getElementById(`${popupId}_customer`)?.value || '';
+            const custName = (type.includes('Purchase') || type.includes('Goods Receipt') ? getSuppliers() : getCustomers()).find(c => c.id == custId)?.name || '';
+            const shipping = document.getElementById(`${popupId}_shipping`)?.value || '';
+            const grandTotal = parseFloat(document.getElementById(`${popupId}_grandTotal`)?.textContent) || 0;
+            const isEdit = editId && editId !== 'null' && editId !== null;
+            const locationDropdown = document.getElementById(`${popupId}_location`);
+            let locationName = 'Main Warehouse';
+            let locationId = 1;
+            if (locationDropdown && locationDropdown.value) { locationName = locationDropdown.value; const allLocs = getData('inventory_locations', []); const locObj = allLocs.find(l => l.name === locationName || l.id == locationName); if (locObj) { locationId = locObj.id; locationName = locObj.name; } }
+            const doc = { id: isEdit ? editId : (Date.now() + Math.random().toString(36).substr(2, 9)), date: new Date().toISOString(), customer: custName, customerId: custId, items: items, shipping: shipping, grandTotal: grandTotal, type: type, location: locationName, locationId: locationId };
+            const key = getStorageKey(type);
+            const saved = getData(key, []);
+            if (isEdit) { const idx = saved.findIndex(r => String(r.id) === String(editId)); if (idx !== -1) { reverseStockEntries(saved[idx]); saved[idx] = doc; } else { saved.push(doc); } }
+            else { saved.push(doc); }
+            setData(key, saved);
+            if (!isEdit) {
+                const stockEntries = getData('stock_entries', []);
+                const allArticles = getArticles();
+                const allColors = getColors();
+                items.forEach(item => {
+                    const art = allArticles.find(a => a.name === item.article);
+                    if (!art) return;
+                    const col = allColors.find(c => c.name === item.color);
+                    let qtyChange = 0;
+                    let stockType = '';
+                    switch(type) {
+                        case 'Quotation': return;
+                        case 'Order': return;
+                        case 'Invoice': qtyChange = -(parseFloat(item.qty) || 0); stockType = 'INVOICE_OUT'; break;
+                        case 'Dispatch Note': qtyChange = -(parseFloat(item.qty) || 0); stockType = 'DISPATCH_OUT'; break;
+                        case 'Goods Return': qtyChange = parseFloat(item.qty) || 0; stockType = 'RETURN_IN'; break;
+                        case 'Goods Receipt': qtyChange = parseFloat(item.qty) || 0; stockType = 'GRN_IN'; break;
+                        case 'Purchase Invoice': qtyChange = 0; stockType = 'PURCHASE_INVOICE'; return;
+                        default: return;
+                    }
+                    if (qtyChange !== 0) {
+                        if (qtyChange < 0) {
+                            const currentStock = stockEntries.filter(e => e.articleId == art.id && (e.locationName === locationName || e.locationId == locationId)).reduce((sum, e) => sum + (parseFloat(e.qty) || 0), 0);
+                            if (currentStock < Math.abs(qtyChange)) { showToast(`⚠️ Insufficient stock! ${art.name}: Available ${currentStock}, Needed ${Math.abs(qtyChange)} at ${locationName}`); return; }
+                        }
+                        const entry = { id: Date.now() + Math.random().toString(36).substr(2, 9), date: new Date().toISOString(), articleId: art.id, colorId: col ? col.id : null, categoryId: item.categoryId || null, brandId: item.brandId || null, qty: qtyChange, locationId: locationId, locationName: locationName, type: stockType, referenceId: doc.id, referenceType: type };
+                        stockEntries.push(entry);
+                    }
+                });
+                setData('stock_entries', stockEntries);
+            }
+            closeModal();
+            if (type === 'Dispatch Note') { showToast(`🚚 Dispatched from "${locationName}"! Stock updated.`); }
+            else if (type === 'Goods Return') { showToast(`↩️ Return added to "${locationName}"! Stock increased.`); }
+            else if (type === 'Invoice') { showToast(`🧾 Invoice created! Stock reduced at "${locationName}".`); }
+            else if (type === 'Goods Receipt') { showToast(`📥 Goods Received at "${locationName}"! Stock increased.`); }
+            else { showToast(`✅ ${type} saved! Total: ₹${grandTotal.toFixed(2)}`); }
+            renderCurrentPage();
+            if (currentPage === 'inventoryMovement') renderMovementPage();
+            if (currentPage === 'stockCheck') renderStockCheckPage();
+        }
+
+        function reverseStockEntries(doc) {
+            if (!doc || !doc.items) return;
+            const stockEntries = getData('stock_entries', []);
+            const filtered = stockEntries.filter(e => !(e.referenceId == doc.id && e.referenceType === doc.type));
+            setData('stock_entries', filtered);
+        }
+
+        function viewRecord(type, id) {
+            const storageKey = getStorageKey(type);
+            const records = getData(storageKey, []);
+            const rec = records.find(r => String(r.id) === String(id));
+            if (!rec) { showToast('⚠️ Record not found!'); return; }
+            showPrintPreview(type, rec);
+        }
+
+        function showPrintPreview(type, rec) {
+            const settings = getCompanySettings();
+            const overlay = document.createElement('div');
+            overlay.className = 'print-preview-overlay';
+            overlay.id = 'printPreviewOverlay';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            const date = new Date(rec.date);
+            const dateStr = date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+            const invoiceNo = String(rec.id).slice(-6);
+            const custId = String(rec.customerId || '123').slice(-3);
+            const subtotal = rec.grandTotal / (1 + (settings.taxRate / 100));
+            const taxAmount = rec.grandTotal - subtotal;
+            let nextProcessBtn = '';
+            if (type === 'Quotation') { nextProcessBtn = `<button class="btn btn-warning" onclick="convertToNext('Quotation', '${rec.id}')" style="margin-right:8px;">📋 Convert to Order</button>`; }
+            else if (type === 'Order') { nextProcessBtn = `<button class="btn btn-success" onclick="convertToNext('Order', '${rec.id}')" style="margin-right:8px;">🧾 Convert to Invoice</button>`; }
+            else if (type === 'Invoice') { nextProcessBtn = `<button class="btn btn-primary" onclick="convertToNext('Invoice', '${rec.id}')" style="margin-right:8px;">🚚 Create Dispatch</button>`; }
+            overlay.innerHTML = `
+                <div style="background:#fff;width:210mm;min-height:297mm;max-height:95vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.4);position:relative;border-radius:12px;">
+                    <div style="position:sticky;top:0;background:#1e293b;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;z-index:10;border-radius:12px 12px 0 0;">
+                        <span>📄 ${type} Preview - #${invoiceNo}</span>
+                        <div style="display:flex;gap:8px;">
+                            ${nextProcessBtn}
+                            <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print</button>
+                            <button class="btn btn-danger btn-sm" onclick="document.getElementById('printPreviewOverlay').remove()">✕ Close</button>
+                        </div>
+                    </div>
+                    <div style="padding:40px 50px;font-family:'Times New Roman',serif;color:#000;font-size:13px;line-height:1.5;" id="printContent">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
+                            <div><h2 style="font-size:22px;margin:0 0 5px;">${settings.companyName}</h2><p style="margin:2px 0;font-size:12px;">${settings.streetAddress}</p><p style="margin:2px 0;font-size:12px;">${settings.cityStateZip}</p><p style="margin:2px 0;font-size:12px;">Phone: ${settings.phone}</p></div>
+                            <div style="border:2px solid #000;padding:15px 20px;min-width:200px;text-align:right;"><h1 style="font-size:28px;margin:0;">${type.toUpperCase()}</h1></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid #000;">
+                            <div><span style="font-weight:bold;font-size:11px;">DATE</span><br><strong>${dateStr}</strong></div>
+                            <div><span style="font-weight:bold;font-size:11px;">${type.toUpperCase()} #</span><br><strong>${invoiceNo}</strong></div>
+                            <div><span style="font-weight:bold;font-size:11px;">CUSTOMER ID</span><br><strong>${custId}</strong></div>
+                        </div>
+                        <div style="display:flex;gap:40px;margin-bottom:25px;">
+                            <div style="flex:1;border:1px solid #000;padding:12px 15px;min-height:100px;"><h4 style="margin:0 0 8px;font-size:12px;">BILL TO:</h4><p style="margin:3px 0;"><strong>${rec.customer || 'N/A'}</strong></p></div>
+                            <div style="flex:1;border:1px solid #000;padding:12px 15px;min-height:100px;"><h4 style="margin:0 0 8px;font-size:12px;">SHIP TO:</h4><p style="margin:3px 0;"><strong>${rec.customer || 'N/A'}</strong></p></div>
+                        </div>
+                        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                            <thead><tr style="background:#e5e7eb;"><th style="border:1px solid #000;padding:8px 10px;text-align:left;">ITEM #</th><th style="border:1px solid #000;padding:8px 10px;text-align:left;">DESCRIPTION</th><th style="border:1px solid #000;padding:8px 10px;text-align:center;">QTY</th><th style="border:1px solid #000;padding:8px 10px;text-align:right;">UNIT PRICE</th><th style="border:1px solid #000;padding:8px 10px;text-align:right;">TOTAL</th></tr></thead>
+                            <tbody>${(rec.items || []).map((item, i) => `<tr><td style="border:1px solid #000;padding:7px 10px;">${String(item.article || 'ITEM').substring(0,8)}-${(i+1).toString().padStart(3,'0')}</td><td style="border:1px solid #000;padding:7px 10px;">${item.article} (${item.brand})<br><small>Color: ${item.color || 'N/A'} | Unit: ${item.unit}</small></td><td style="border:1px solid #000;padding:7px 10px;text-align:center;">${item.qty}</td><td style="border:1px solid #000;padding:7px 10px;text-align:right;">₹${item.price.toFixed(2)}</td><td style="border:1px solid #000;padding:7px 10px;text-align:right;">₹${item.total.toFixed(2)}</td></tr>`).join('')}</tbody>
+                        </table>
+                        <div style="display:flex;justify-content:flex-end;margin-bottom:25px;">
+                            <div style="width:280px;border:1px solid #000;">
+                                <div style="display:flex;justify-content:space-between;padding:8px 15px;border-bottom:1px solid #000;"><span>SUBTOTAL</span><span>₹${subtotal.toFixed(2)}</span></div>
+                                <div style="display:flex;justify-content:space-between;padding:8px 15px;border-bottom:1px solid #000;"><span>TAX (${settings.taxRate}%)</span><span>₹${taxAmount.toFixed(2)}</span></div>
+                                <div style="display:flex;justify-content:space-between;padding:8px 15px;border-bottom:1px solid #000;"><span>S & H</span><span>${rec.shipping || '—'}</span></div>
+                                <div style="display:flex;justify-content:space-between;padding:8px 15px;font-weight:bold;font-size:14px;background:#e5e7eb;"><span>TOTAL</span><span>₹${rec.grandTotal.toFixed(2)}</span></div>
+                            </div>
+                        </div>
+                        <div style="text-align:center;font-size:11px;border-top:2px solid #000;padding-top:15px;"><p style="margin:3px 0;">${settings.bankDetails.replace(/\n/g, '<br>')}</p><p style="margin:3px 0;">Thank You For Your Business!</p></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+            document.addEventListener('keydown', function escHandler(e) { if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escHandler); } });
+        }
+
+        function convertToNext(fromType, id) {
+            const rec = getData(getStorageKey(fromType), []).find(r => String(r.id) === String(id));
+            if (!rec) return;
+            let nextType = '';
+            if (fromType === 'Quotation') nextType = 'Order';
+            else if (fromType === 'Order') nextType = 'Invoice';
+            else if (fromType === 'Invoice') nextType = 'Dispatch Note';
+            else if (fromType === 'Purchase Order') nextType = 'Goods Receipt';
+            else if (fromType === 'Goods Receipt') nextType = 'Purchase Invoice';
+            else return;
+            document.getElementById('printPreviewOverlay')?.remove();
+            openNewEntryPopup(nextType, { id: null, date: new Date().toISOString(), customer: rec.customer, customerId: rec.customerId, items: JSON.parse(JSON.stringify(rec.items)), shipping: rec.shipping, grandTotal: rec.grandTotal, type: nextType, convertedFrom: fromType, convertedFromId: rec.id, lockedLocation: rec.lockedLocation || rec.location || '' });
+            showToast(`✅ ${fromType} converted to ${nextType}!`);
+        }
+
+        function quickConvert(fromType, id) {
+            const rec = getData(getStorageKey(fromType), []).find(r => String(r.id) === String(id));
+            if (!rec) { showToast('⚠️ Record not found!'); return; }
+            let nextType = '';
+            if (fromType === 'Quotation') nextType = 'Order';
+            else if (fromType === 'Order') nextType = 'Invoice';
+            else if (fromType === 'Invoice') nextType = 'Dispatch Note';
+            else if (fromType === 'Purchase Order') nextType = 'Goods Receipt';
+            else if (fromType === 'Goods Receipt') nextType = 'Purchase Invoice';
+            else return;
+            const overlay = document.createElement('div');
+            overlay.className = 'confirm-overlay';
+            overlay.innerHTML = `
+                <div class="confirm-dialog">
+                    <h3>➡️ Convert ${fromType} to ${nextType}?</h3>
+                    <p>This will create a new ${nextType} with all items.</p>
+                    <p style="font-size:0.85rem;color:#64748b;">Customer: ${rec.customer||'N/A'} | Items: ${rec.items?.length||0} | Total: ₹${(rec.grandTotal||0).toFixed(2)}</p>
+                    <div style="display:flex;gap:10px;justify-content:center;">
+                        <button class="btn btn-outline" onclick="this.closest('.confirm-overlay').remove()">Cancel</button>
+                        <button class="btn btn-success" onclick="this.closest('.confirm-overlay').remove();convertToNext('${fromType}','${id}')">Yes, Convert</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function editRecord(type, id) {
+            const rec = getData(getStorageKey(type), []).find(r => String(r.id) === String(id));
+            if (!rec) { showToast('⚠️ Record not found!'); return; }
+            openNewEntryPopup(type, rec);
+        }
+
+        function deleteRecord(type, id) {
+            const overlay = document.createElement('div');
+            overlay.className = 'confirm-overlay';
+            overlay.innerHTML = `
+                <div class="confirm-dialog">
+                    <h3>🗑️ Delete ${type}?</h3>
+                    <p>Are you sure? This cannot be undone.</p>
+                    <div style="display:flex;gap:10px;justify-content:center;">
+                        <button class="btn btn-outline" onclick="this.closest('.confirm-overlay').remove()">Cancel</button>
+                        <button class="btn btn-danger" onclick="this.closest('.confirm-overlay').remove();confirmDeleteRecord('${type}','${id}')">Yes, Delete</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function confirmDeleteRecord(type, id) {
+            const key = getStorageKey(type);
+            const records = getData(key, []);
+            const filtered = records.filter(r => String(r.id) !== String(id));
+            setData(key, filtered);
+            showToast('🗑️ Record deleted!');
+            renderCurrentPage();
+        }
+
+        function renderInventoryPage() {
+            const card = document.getElementById('inventoryCard');
+            if (!card) return;
+            const products = getProducts();
+            const categories = getCategories();
+            const brands = getBrands();
+            const articles = getArticles();
+            const colors = getColors();
+            const units = getUnits();
+            let html = `
+                <div class="card-title">➕ Create New Product</div>
+                <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:15px;margin-bottom:15px;"><small style="color:#1e40af;">Search & select from existing lists</small></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Product Code</label><input type="text" id="pm_code" value="${generateProductCode()}" readonly style="background:#f1f5f9;font-weight:bold;color:#2563eb;"></div>
+                    <div class="form-group small"><label>Barcode</label><input type="text" id="pm_barcode" placeholder="Optional"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Category *</label><div class="searchable-dropdown"><input type="text" class="search-input" id="pm_category_search" placeholder="🔍 Search..." autocomplete="off" onfocus="toggleDropdownList('pm_category_list', true)" oninput="filterDropdownList('pm_category_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('pm_category_list',false),200)"><input type="hidden" id="pm_category" value=""><div class="dropdown-list" id="pm_category_list">${categories.map(c => `<div class="option" onclick="selectDropdownOption('pm_category','${c.id}','pm_category_search','${c.name}');pmLoadBrands();">${c.code||''} ${c.name}</div>`).join('')}</div></div></div>
+                    <div class="form-group"><label>Brand *</label><div class="searchable-dropdown"><input type="text" class="search-input" id="pm_brand_search" placeholder="🔍 Search..." autocomplete="off" disabled onfocus="toggleDropdownList('pm_brand_list', true)" oninput="filterDropdownList('pm_brand_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('pm_brand_list',false),200)"><input type="hidden" id="pm_brand" value=""><div class="dropdown-list" id="pm_brand_list"></div></div></div>
+                    <div class="form-group"><label>Article *</label><div class="searchable-dropdown"><input type="text" class="search-input" id="pm_article_search" placeholder="🔍 Search..." autocomplete="off" disabled onfocus="toggleDropdownList('pm_article_list', true)" oninput="filterDropdownList('pm_article_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('pm_article_list',false),200)"><input type="hidden" id="pm_article" value=""><div class="dropdown-list" id="pm_article_list"></div></div></div>
+                    <div class="form-group"><label>Color/Finish</label><div class="searchable-dropdown"><input type="text" class="search-input" id="pm_color_search" placeholder="🔍 Search..." autocomplete="off" disabled onfocus="toggleDropdownList('pm_color_list', true)" oninput="filterDropdownList('pm_color_list', this.value)" onblur="setTimeout(()=>toggleDropdownList('pm_color_list',false),200)"><input type="hidden" id="pm_color" value=""><div class="dropdown-list" id="pm_color_list"></div></div></div>
+                    <div class="form-group small"><label>Unit *</label><select id="pm_unit" style="padding:11px 14px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option>${units.map(u => `<option value="${u.id}">${u.code||''} ${u.name}</option>`).join('')}</select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group small"><label>Purchase Price (₹)</label><input type="number" id="pm_purchasePrice" value="0" step="any" min="0"></div>
+                    <div class="form-group small"><label>Sale Price (₹) *</label><input type="number" id="pm_salePrice" value="0" step="any" min="0"></div>
+                    <div class="form-group small"><label>Min Stock</label><input type="number" id="pm_minStock" value="5" min="0"></div>
+                    <div class="form-group" style="justify-content:flex-end;"><button class="btn btn-success" onclick="pmSaveProduct()" style="margin-top:18px;">💾 Save Product</button></div>
+                </div>
+                <hr style="margin:20px 0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><strong>📋 Saved Products (${products.length})</strong><button class="btn btn-outline btn-sm" onclick="renderInventoryPage()">🔄 Refresh</button></div>
+            `;
+            if (products.length === 0) { html += `<div style="text-align:center;padding:30px;color:#94a3b8;">📭 No products created yet.</div>`; }
+            else {
+                html += `<div class="table-container" style="max-height:400px;overflow-y:auto;"><table class="records-table"><thead><tr><th>Code</th><th>Category</th><th>Brand</th><th>Article</th><th>Color</th><th>Unit</th><th>Purchase ₹</th><th>Sale ₹</th><th>Actions</th></tr></thead><tbody>`;
+                products.forEach((p) => {
+                    const names = getProductFullName(p);
+                    html += `<tr><td><strong style="color:#2563eb;">${p.code||'—'}</strong></td><td>${names.category}</td><td>${names.brand}</td><td>${names.article}</td><td>${names.color}</td><td>${names.unit}</td><td style="color:#dc2626;">₹${(p.purchasePrice||0).toFixed(2)}</td><td style="color:#059669;">₹${(p.salePrice||0).toFixed(2)}</td><td class="actions"><button class="btn-icon btn-edit" onclick="pmEditProduct(${p.id})">✏️</button><button class="btn-icon btn-delete" onclick="pmDeleteProduct(${p.id})">🗑️</button></td></tr>`;
+                });
+                html += `</tbody></table></div>`;
+            }
+            card.innerHTML = html;
+        }
+
+        function pmLoadBrands() {
+            const catId = document.getElementById('pm_category').value;
+            const brandSearch = document.getElementById('pm_brand_search');
+            const brandHidden = document.getElementById('pm_brand');
+            const brandList = document.getElementById('pm_brand_list');
+            const artSearch = document.getElementById('pm_article_search');
+            const artHidden = document.getElementById('pm_article');
+            const artList = document.getElementById('pm_article_list');
+            const colSearch = document.getElementById('pm_color_search');
+            const colHidden = document.getElementById('pm_color');
+            const colList = document.getElementById('pm_color_list');
+            brandSearch.value = ''; brandHidden.value = ''; brandList.innerHTML = '';
+            artSearch.value = ''; artHidden.value = ''; artList.innerHTML = '';
+            colSearch.value = ''; colHidden.value = ''; colList.innerHTML = '';
+            brandSearch.disabled = !catId; artSearch.disabled = true; colSearch.disabled = true;
+            if (catId) { getBrandsByCategory(catId).forEach(b => { brandList.innerHTML += `<div class="option" onclick="selectDropdownOption('pm_brand','${b.id}','pm_brand_search','${b.name}');pmLoadArticles();">${b.code||''} ${b.name}</div>`; }); }
+        }
+
+        function pmLoadArticles() {
+            const brandId = document.getElementById('pm_brand').value;
+            const artSearch = document.getElementById('pm_article_search');
+            const artHidden = document.getElementById('pm_article');
+            const artList = document.getElementById('pm_article_list');
+            const colSearch = document.getElementById('pm_color_search');
+            const colHidden = document.getElementById('pm_color');
+            const colList = document.getElementById('pm_color_list');
+            artSearch.value = ''; artHidden.value = ''; artList.innerHTML = '';
+            colSearch.value = ''; colHidden.value = ''; colList.innerHTML = '';
+            artSearch.disabled = !brandId; colSearch.disabled = true;
+            if (brandId) { getArticlesByBrand(brandId).forEach(a => { artList.innerHTML += `<div class="option" onclick="selectDropdownOption('pm_article','${a.id}','pm_article_search','${a.name}');pmLoadColors();">${a.code||''} ${a.name}</div>`; }); }
+        }
+
+        function pmLoadColors() {
+            const artId = document.getElementById('pm_article').value;
+            const colSearch = document.getElementById('pm_color_search');
+            const colHidden = document.getElementById('pm_color');
+            const colList = document.getElementById('pm_color_list');
+            colSearch.value = ''; colHidden.value = ''; colList.innerHTML = '';
+            colSearch.disabled = !artId;
+            if (artId) { getColorsByArticle(artId).forEach(c => { colList.innerHTML += `<div class="option" onclick="selectDropdownOption('pm_color','${c.id}','pm_color_search','${c.name}');">${c.code||''} ${c.name}</div>`; }); }
+        }
+
+        function pmSaveProduct() {
+            const catId = parseInt(document.getElementById('pm_category')?.value);
+            const brandId = parseInt(document.getElementById('pm_brand')?.value);
+            const artId = parseInt(document.getElementById('pm_article')?.value);
+            const colId = parseInt(document.getElementById('pm_color')?.value) || null;
+            const unitId = parseInt(document.getElementById('pm_unit')?.value);
+            const purchasePrice = parseFloat(document.getElementById('pm_purchasePrice')?.value) || 0;
+            const salePrice = parseFloat(document.getElementById('pm_salePrice')?.value) || 0;
+            const minStock = parseInt(document.getElementById('pm_minStock')?.value) || 0;
+            const barcode = document.getElementById('pm_barcode')?.value.trim() || '';
+            const code = document.getElementById('pm_code')?.value || generateProductCode();
+            if (!catId || !brandId || !artId || !unitId) { showToast('⚠️ Please select Category, Brand, Article and Unit'); return; }
+            if (salePrice <= 0) { showToast('⚠️ Sale Price must be greater than 0'); return; }
+            const products = getProducts();
+            const duplicate = products.find(p => p.categoryId == catId && p.brandId == brandId && p.articleId == artId && (p.colorId || null) == colId);
+            if (duplicate) { showToast('⚠️ This product combination already exists!'); return; }
+            products.push({ id: Date.now(), code: code, categoryId: catId, brandId: brandId, articleId: artId, colorId: colId, unitId: unitId, purchasePrice: purchasePrice, salePrice: salePrice, minStock: minStock, barcode: barcode, createdAt: new Date().toISOString() });
+            setData('inventory_products', products);
+            showToast('✅ Product "' + code + '" created!');
+            renderInventoryPage();
+        }
+
+        function pmEditProduct(id) {
+            const product = getProductById(id);
+            if (!product) { showToast('⚠️ Product not found!'); return; }
+            const cat = getCategories().find(c => c.id == product.categoryId);
+            const brand = getBrands().find(b => b.id == product.brandId);
+            const art = getArticles().find(a => a.id == product.articleId);
+            const col = getColors().find(c => c.id == product.colorId);
+            if (cat) { document.getElementById('pm_category_search').value = cat.name; document.getElementById('pm_category').value = cat.id; pmLoadBrands(); }
+            setTimeout(() => {
+                if (brand) { document.getElementById('pm_brand_search').value = brand.name; document.getElementById('pm_brand').value = brand.id; pmLoadArticles(); }
+                setTimeout(() => {
+                    if (art) { document.getElementById('pm_article_search').value = art.name; document.getElementById('pm_article').value = art.id; pmLoadColors(); }
+                    setTimeout(() => { if (col) { document.getElementById('pm_color_search').value = col.name; document.getElementById('pm_color').value = col.id; } }, 150);
+                }, 150);
+            }, 150);
+            document.getElementById('pm_code').value = product.code || '';
+            document.getElementById('pm_barcode').value = product.barcode || '';
+            document.getElementById('pm_unit').value = product.unitId || '';
+            document.getElementById('pm_purchasePrice').value = product.purchasePrice || 0;
+            document.getElementById('pm_salePrice').value = product.salePrice || 0;
+            document.getElementById('pm_minStock').value = product.minStock || 0;
+            const products = getProducts().filter(p => p.id !== id);
+            setData('inventory_products', products);
+            showToast('✏️ Product loaded for editing. Modify and click Save.');
+        }
+
+        function pmDeleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            setData('inventory_products', getProducts().filter(p => p.id !== id));
+            showToast('🗑️ Product deleted!');
+            renderInventoryPage();
+        }
+
+        function renderCustomersPage() {
+            const card = document.getElementById('customersCard');
+            if (!card) return;
+            const customers = getCustomers();
+            card.innerHTML = `
+                <div class="card-title">👥 Customer List (${customers.length})</div>
+                <div class="table-container"><table class="records-table"><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Actions</th></tr></thead><tbody>${customers.map((c,i) => `<tr><td>${i+1}</td><td>${c.name}</td><td>${c.phone||'—'}</td><td>${c.email||'—'}</td><td>${c.address||'—'}</td><td class="actions"><button class="btn-icon btn-edit" onclick="editCustomer(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteCustomer(${c.id})">🗑️</button></td></tr>`).join('')}${customers.length===0?'<tr><td colspan="6" style="text-align:center;padding:20px;">No customers</td></tr>':''}</tbody></table></div>`;
+        }
+
+        function addCustomer() {
+            const name = prompt('Customer Name:');
+            if (!name) return;
+            const phone = prompt('Phone:') || '';
+            const email = prompt('Email:') || '';
+            const address = prompt('Address:') || '';
+            const customers = getCustomers();
+            customers.push({ id: Date.now(), name, phone, email, address });
+            setData('customers', customers);
+            showToast('✅ Customer added!');
+            renderCustomersPage();
+        }
+
+        function editCustomer(id) {
+            const c = getCustomers().find(cu => cu.id === id);
+            if (!c) return;
+            const name = prompt('Name:', c.name);
+            if (!name) return;
+            c.name = name;
+            c.phone = prompt('Phone:', c.phone || '') || c.phone;
+            c.email = prompt('Email:', c.email || '') || c.email;
+            c.address = prompt('Address:', c.address || '') || c.address;
+            setData('customers', getCustomers());
+            showToast('✅ Updated!');
+            renderCustomersPage();
+        }
+
+        function deleteCustomer(id) {
+            if (!confirm('Delete this customer?')) return;
+            setData('customers', getCustomers().filter(c => c.id !== id));
+            showToast('🗑️ Deleted');
+            renderCustomersPage();
+        }
+
+        function renderSuppliersPage() {
+            const card = document.getElementById('suppliersCard');
+            if (!card) return;
+            const suppliers = getSuppliers();
+            card.innerHTML = `
+                <div class="card-title">👤 Supplier List (${suppliers.length})</div>
+                <div class="table-container"><table class="records-table"><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Actions</th></tr></thead><tbody>${suppliers.map((s,i) => `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.phone||'—'}</td><td>${s.email||'—'}</td><td>${s.address||'—'}</td><td class="actions"><button class="btn-icon btn-edit" onclick="editSupplier(${s.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteSupplier(${s.id})">🗑️</button></td></tr>`).join('')}${suppliers.length===0?'<tr><td colspan="6" style="text-align:center;padding:20px;">No suppliers</td></tr>':''}</tbody></table></div>`;
+        }
+
+        function addSupplier() {
+            const name = prompt('Supplier Name:');
+            if (!name) return;
+            const phone = prompt('Phone:') || '';
+            const email = prompt('Email:') || '';
+            const address = prompt('Address:') || '';
+            const suppliers = getSuppliers();
+            suppliers.push({ id: Date.now(), name, phone, email, address });
+            setData('suppliers', suppliers);
+            showToast('✅ Supplier added!');
+            renderSuppliersPage();
+        }
+
+        function editSupplier(id) {
+            const s = getSuppliers().find(su => su.id === id);
+            if (!s) return;
+            const name = prompt('Name:', s.name);
+            if (!name) return;
+            s.name = name;
+            s.phone = prompt('Phone:', s.phone || '') || s.phone;
+            s.email = prompt('Email:', s.email || '') || s.email;
+            s.address = prompt('Address:', s.address || '') || s.address;
+            setData('suppliers', getSuppliers());
+            showToast('✅ Updated!');
+            renderSuppliersPage();
+        }
+
+        function deleteSupplier(id) {
+            if (!confirm('Delete this supplier?')) return;
+            setData('suppliers', getSuppliers().filter(s => s.id !== id));
+            showToast('🗑️ Deleted');
+            renderSuppliersPage();
+        }
+
+        function renderInventoryCategoryPage() {
+            const card = document.getElementById('inventoryCategoryCard');
+            if (!card) return;
+            const categories = getCategories();
+            card.innerHTML = `
+                <div class="card-title">📁 Categories (${categories.length})</div>
+                <div class="form-row"><div class="form-group" style="flex:3;"><label>Category Name *</label><input type="text" id="invCat_name" placeholder="Enter name"></div><div class="form-group" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="saveCategory()">💾 Save</button></div></div>
+                <div class="saved-list">${categories.map((c,i) => `<div class="saved-item" style="display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #e2e8f0;"><span><strong style="color:#2563eb;">${c.code||'CAT-'+String(i+1).padStart(3,'0')}</strong> 📁 ${c.name}</span><div><button class="btn-icon btn-edit" onclick="editCategory(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteCategory(${c.id})">🗑️</button></div></div>`).join('')}</div>`;
+        }
+
+        function saveCategory() {
+            const name = document.getElementById('invCat_name')?.value.trim();
+            if (!name) { showToast('⚠️ Enter name'); return; }
+            const categories = getCategories();
+            const count = categories.length + 1;
+            categories.push({ id: Date.now(), code: 'CAT-' + String(count).padStart(3, '0'), name });
+            setData('inventory_categories', categories);
+            showToast('✅ Saved!');
+            renderInventoryCategoryPage();
+        }
+
+        function editCategory(id) {
+            const cat = getCategories().find(c => c.id === id);
+            if (!cat) return;
+            const name = prompt('Edit:', cat.name);
+            if (!name) return;
+            cat.name = name;
+            setData('inventory_categories', getCategories());
+            showToast('✅ Updated!');
+            renderInventoryCategoryPage();
+        }
+
+        function deleteCategory(id) {
+            if (!confirm('Delete?')) return;
+            setData('inventory_categories', getCategories().filter(c => c.id !== id));
+            showToast('🗑️ Deleted');
+            renderInventoryCategoryPage();
+        }
+
+        function renderInventoryBrandPage() {
+            const card = document.getElementById('inventoryBrandCard');
+            if (!card) return;
+            const brands = getBrands();
+            card.innerHTML = `
+                <div class="card-title">🏷️ Brands (${brands.length})</div>
+                <div class="form-row"><div class="form-group" style="flex:3;"><label>Brand Name *</label><input type="text" id="invBr_name" placeholder="Enter name"></div><div class="form-group" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="saveBrand()">💾 Save</button></div></div>
+                <div class="saved-list">${brands.map((b,i) => `<div class="saved-item" style="display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #e2e8f0;"><span><strong style="color:#2563eb;">${b.code||'BRD-'+String(i+1).padStart(3,'0')}</strong> 🏷️ ${b.name}</span><div><button class="btn-icon btn-edit" onclick="editBrand(${b.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteBrand(${b.id})">🗑️</button></div></div>`).join('')}</div>`;
+        }
+
+        function saveBrand() { const name = document.getElementById('invBr_name')?.value.trim(); if (!name) { showToast('⚠️ Enter name'); return; } const brands = getBrands(); const count = brands.length + 1; brands.push({ id: Date.now(), code: 'BRD-' + String(count).padStart(3, '0'), name }); setData('inventory_brands', brands); showToast('✅ Saved!'); renderInventoryBrandPage(); }
+        function editBrand(id) { const b = getBrands().find(b => b.id === id); if (!b) return; const name = prompt('Edit:', b.name); if (!name) return; b.name = name; setData('inventory_brands', getBrands()); showToast('✅ Updated!'); renderInventoryBrandPage(); }
+        function deleteBrand(id) { if (!confirm('Delete?')) return; setData('inventory_brands', getBrands().filter(b => b.id !== id)); showToast('🗑️ Deleted'); renderInventoryBrandPage(); }
+
+        function renderInventoryArticlePage() {
+            const card = document.getElementById('inventoryArticleCard');
+            if (!card) return;
+            const articles = getArticles();
+            card.innerHTML = `
+                <div class="card-title">📄 Articles (${articles.length})</div>
+                <div class="form-row"><div class="form-group" style="flex:3;"><label>Article Name *</label><input type="text" id="invArt_name" placeholder="Enter name"></div><div class="form-group" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="saveArticle()">💾 Save</button></div></div>
+                <div class="saved-list">${articles.map((a,i) => `<div class="saved-item" style="display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #e2e8f0;"><span><strong style="color:#2563eb;">${a.code||'ART-'+String(i+1).padStart(3,'0')}</strong> 📄 ${a.name}</span><div><button class="btn-icon btn-edit" onclick="editArticle(${a.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteArticle(${a.id})">🗑️</button></div></div>`).join('')}</div>`;
+        }
+
+        function saveArticle() { const name = document.getElementById('invArt_name')?.value.trim(); if (!name) { showToast('⚠️ Enter name'); return; } const articles = getArticles(); const count = articles.length + 1; articles.push({ id: Date.now(), code: 'ART-' + String(count).padStart(3, '0'), name }); setData('inventory_articles', articles); showToast('✅ Saved!'); renderInventoryArticlePage(); }
+        function editArticle(id) { const a = getArticles().find(a => a.id === id); if (!a) return; const name = prompt('Edit:', a.name); if (!name) return; a.name = name; setData('inventory_articles', getArticles()); showToast('✅ Updated!'); renderInventoryArticlePage(); }
+        function deleteArticle(id) { if (!confirm('Delete?')) return; setData('inventory_articles', getArticles().filter(a => a.id !== id)); showToast('🗑️ Deleted'); renderInventoryArticlePage(); }
+
+        function renderInventoryColorPage() {
+            const card = document.getElementById('inventoryColorCard');
+            if (!card) return;
+            const colors = getColors();
+            card.innerHTML = `
+                <div class="card-title">🎨 Colors (${colors.length})</div>
+                <div class="form-row"><div class="form-group" style="flex:3;"><label>Color Name *</label><input type="text" id="invCol_name" placeholder="Enter name"></div><div class="form-group" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="saveColor()">💾 Save</button></div></div>
+                <div class="saved-list">${colors.map((c,i) => `<div class="saved-item" style="display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #e2e8f0;"><span><strong style="color:#2563eb;">${c.code||'CLR-'+String(i+1).padStart(3,'0')}</strong> 🎨 ${c.name}</span><div><button class="btn-icon btn-edit" onclick="editColor(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteColor(${c.id})">🗑️</button></div></div>`).join('')}</div>`;
+        }
+
+        function saveColor() { const name = document.getElementById('invCol_name')?.value.trim(); if (!name) { showToast('⚠️ Enter name'); return; } const colors = getColors(); const count = colors.length + 1; colors.push({ id: Date.now(), code: 'CLR-' + String(count).padStart(3, '0'), name }); setData('inventory_colors', colors); showToast('✅ Saved!'); renderInventoryColorPage(); }
+        function editColor(id) { const c = getColors().find(c => c.id === id); if (!c) return; const name = prompt('Edit:', c.name); if (!name) return; c.name = name; setData('inventory_colors', getColors()); showToast('✅ Updated!'); renderInventoryColorPage(); }
+        function deleteColor(id) { if (!confirm('Delete?')) return; setData('inventory_colors', getColors().filter(c => c.id !== id)); showToast('🗑️ Deleted'); renderInventoryColorPage(); }
+
+        function renderInventoryUnitPage() {
+            const card = document.getElementById('inventoryUnitCard');
+            if (!card) return;
+            const units = getUnits();
+            card.innerHTML = `
+                <div class="card-title">📏 Units (${units.length})</div>
+                <div class="form-row"><div class="form-group" style="flex:3;"><label>Unit Name *</label><input type="text" id="invUnit_name" placeholder="e.g., PCS, KG"></div><div class="form-group" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="saveUnit()">💾 Save</button></div></div>
+                <div class="saved-list">${units.map((u,i) => `<div class="saved-item" style="display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #e2e8f0;"><span><strong style="color:#2563eb;">${u.code||'UNT-'+String(i+1).padStart(3,'0')}</strong> 📏 ${u.name}</span><div><button class="btn-icon btn-edit" onclick="editUnit(${u.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteUnit(${u.id})">🗑️</button></div></div>`).join('')}</div>`;
+        }
+
+        function saveUnit() { const name = document.getElementById('invUnit_name')?.value.trim(); if (!name) { showToast('⚠️ Enter name'); return; } const units = getUnits(); const count = units.length + 1; units.push({ id: Date.now(), code: 'UNT-' + String(count).padStart(3, '0'), name }); setData('inventory_units', units); showToast('✅ Saved!'); renderInventoryUnitPage(); }
+        function editUnit(id) { const u = getUnits().find(u => u.id === id); if (!u) return; const name = prompt('Edit:', u.name); if (!name) return; u.name = name; setData('inventory_units', getUnits()); showToast('✅ Updated!'); renderInventoryUnitPage(); }
+        function deleteUnit(id) { if (!confirm('Delete?')) return; setData('inventory_units', getUnits().filter(u => u.id !== id)); showToast('🗑️ Deleted'); renderInventoryUnitPage(); }
+
+        // ==================== STOCK ENTRY, TRANSFER, MOVEMENT, LOCATIONS, STOCK CHECK, SETTINGS ====================
+        // [All remaining functions from the original - stockEntry, transfer, movement, locations, stockCheck, settings]
+        // These are identical to the original code you provided
+        
+        function renderStockEntryPage() {
+            const card = document.getElementById('stockEntryCard');
+            if (!card) return;
+            const categories = getCategories();
+            const locations = getLocations();
+            const stockEntries = getData('stock_entries', []);
+            const brands = getBrands();
+            const articles = getArticles();
+            const colors = getColors();
+            const units = getUnits();
+            card.innerHTML = `
+                <div class="card-title">📥 New Stock Entry</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Category *</label><select id="stock_category" onchange="stockCategoryChange()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option>${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+                    <div class="form-group"><label>Brand *</label><select id="stock_brand" onchange="stockBrandChange()" disabled style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option></select></div>
+                    <div class="form-group"><label>Article *</label><select id="stock_article" onchange="stockArticleChange()" disabled style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option></select></div>
+                    <div class="form-group"><label>Color</label><select id="stock_color" disabled onchange="updateStockEntryLiveStock()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option></select></div>
+                    <div class="form-group small"><label>Unit</label><input type="text" id="stock_unit" readonly placeholder="Auto"></div>
+                    <div class="form-group small"><label>Qty *</label><input type="number" id="stock_qty" value="1" min="1"></div>
+                    <div class="form-group"><label>Location *</label><select id="stock_location" onchange="updateStockEntryLiveStock()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option>${locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('')}</select></div>
+                    <div class="form-group" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="saveStockEntry()">📥 Add Stock</button></div>
+                </div>
+                <div id="liveStockDisplay" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;margin-bottom:15px;display:none;"><strong>📊 Current Stock: </strong><span id="liveStockCount" style="font-weight:700;">0</span></div>
+                <div class="card-title">📋 Recent Stock Entries</div>
+                <div class="table-container"><table class="records-table"><thead><tr><th>#</th><th>Date</th><th>Article</th><th>Color</th><th>Qty</th><th>Location</th><th>Type</th></tr></thead><tbody>${stockEntries.slice(-20).reverse().map((s,i) => { const art = articles.find(a => a.id == s.articleId); const loc = locations.find(l => l.id == s.locationId); const col = colors.find(c => c.id == s.colorId); return `<tr><td>${i+1}</td><td>${new Date(s.date).toLocaleDateString()}</td><td>${art?.name||'N/A'}</td><td>${col?.name||'—'}</td><td><strong>${s.qty}</strong></td><td>${loc?.name||'N/A'}</td><td><span class="stock-badge stock-in">${s.type||'IN'}</span></td></tr>`; }).join('')}</tbody></table></div>`;
+        }
+
+        function stockCategoryChange() {
+            const catId = document.getElementById('stock_category').value;
+            const brandSel = document.getElementById('stock_brand');
+            const artSel = document.getElementById('stock_article');
+            const colSel = document.getElementById('stock_color');
+            const unitInp = document.getElementById('stock_unit');
+            const liveDiv = document.getElementById('liveStockDisplay');
+            brandSel.innerHTML = '<option value="">-- Select --</option>';
+            artSel.innerHTML = '<option value="">-- Select --</option>';
+            colSel.innerHTML = '<option value="">-- Select --</option>';
+            unitInp.value = '';
+            if(liveDiv) liveDiv.style.display = 'none';
+            brandSel.disabled = !catId;
+            artSel.disabled = true;
+            colSel.disabled = true;
+            if (catId) { getBrandsByCategory(catId).forEach(b => { brandSel.innerHTML += `<option value="${b.id}">${b.name}</option>`; }); }
+        }
+
+        function stockBrandChange() {
+            const brandId = document.getElementById('stock_brand').value;
+            const artSel = document.getElementById('stock_article');
+            const colSel = document.getElementById('stock_color');
+            const unitInp = document.getElementById('stock_unit');
+            const liveDiv = document.getElementById('liveStockDisplay');
+            artSel.innerHTML = '<option value="">-- Select --</option>';
+            colSel.innerHTML = '<option value="">-- Select --</option>';
+            unitInp.value = '';
+            if(liveDiv) liveDiv.style.display = 'none';
+            artSel.disabled = !brandId;
+            colSel.disabled = true;
+            if (brandId) { getArticlesByBrand(brandId).forEach(a => { artSel.innerHTML += `<option value="${a.id}" data-unit="${a.unitId}">${a.name}</option>`; }); }
+        }
+
+        function stockArticleChange() {
+            const artId = document.getElementById('stock_article').value;
+            const colSel = document.getElementById('stock_color');
+            const unitInp = document.getElementById('stock_unit');
+            const liveDiv = document.getElementById('liveStockDisplay');
+            colSel.innerHTML = '<option value="">-- Select --</option>';
+            if (artId) {
+                const opt = document.getElementById('stock_article').selectedOptions[0];
+                if (opt && opt.dataset.unit) unitInp.value = getUnitById(parseInt(opt.dataset.unit)).name;
+                getColorsByArticle(artId).forEach(c => { colSel.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
+                colSel.disabled = false;
+                updateStockEntryLiveStock();
+            } else { unitInp.value = ''; colSel.disabled = true; if(liveDiv) liveDiv.style.display = 'none'; }
+        }
+
+        function updateStockEntryLiveStock() {
+            const liveDiv = document.getElementById('liveStockDisplay');
+            const liveCount = document.getElementById('liveStockCount');
+            if (!liveDiv || !liveCount) return;
+            const artId = document.getElementById('stock_article')?.value;
+            const colId = document.getElementById('stock_color')?.value;
+            const locId = document.getElementById('stock_location')?.value;
+            if (!artId || !colId || !locId) { liveDiv.style.display = 'none'; return; }
+            const allEntries = getData('stock_entries', []);
+            let currentStock = 0;
+            allEntries.forEach(entry => { if (entry.articleId == artId && entry.colorId == colId && (entry.locationId == locId || entry.locationName === getLocations().find(l => l.id == locId)?.name)) { currentStock += (parseFloat(entry.qty) || 0); } });
+            liveDiv.style.display = 'block';
+            liveCount.textContent = currentStock;
+            liveCount.style.color = currentStock < 0 ? 'red' : currentStock < 10 ? 'orange' : 'green';
+        }
+
+        function saveStockEntry() {
+            const articleId = document.getElementById('stock_article')?.value;
+            const colorId = document.getElementById('stock_color')?.value;
+            const qty = parseFloat(document.getElementById('stock_qty')?.value) || 0;
+            const locationId = parseInt(document.getElementById('stock_location')?.value);
+            if (!articleId || qty <= 0 || !locationId) { showToast('⚠️ Please fill all fields'); return; }
+            const allLocs = getLocations();
+            const location = allLocs.find(l => l.id == locationId);
+            const entries = getData('stock_entries', []);
+            const entryId = Date.now() + Math.random().toString(36).substr(2, 9);
+            entries.push({ id: entryId, date: new Date().toISOString(), articleId: parseInt(articleId), colorId: parseInt(colorId) || null, qty: Math.abs(qty), locationId: locationId, locationName: location?.name || 'Unknown', type: 'IN', referenceType: 'Stock Entry', referenceId: entryId });
+            setData('stock_entries', entries);
+            showToast('✅ Stock added!');
+            renderStockEntryPage();
+            if (currentPage === 'inventoryMovement') renderMovementPage();
+            if (currentPage === 'stockCheck') renderStockCheckPage();
+        }
+
+        function renderTransferPage() {
+            const card = document.getElementById('transferCard');
+            if (!card) return;
+            const categories = getCategories();
+            const locations = getLocations();
+            const transfers = getData('inventory_transfers', []);
+            const brands = getBrands();
+            const articles = getArticles();
+            const colors = getColors();
+            card.innerHTML = `
+                <div class="card-title">🔄 Transfer Stock</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Category</label><select id="trans_category" onchange="transCategoryChange()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option>${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+                    <div class="form-group"><label>Brand</label><select id="trans_brand" onchange="transBrandChange()" disabled style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option></select></div>
+                    <div class="form-group"><label>Article *</label><select id="trans_article" onchange="transArticleChange()" disabled style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option></select></div>
+                    <div class="form-group"><label>Color</label><select id="trans_color" disabled onchange="updateTransferStock()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">-- Select --</option></select></div>
+                    <div class="form-group small"><label>Unit</label><input type="text" id="trans_unit" readonly placeholder="Auto"></div>
+                    <div class="form-group small"><label>Qty *</label><input type="number" id="trans_qty" value="1" min="1"></div>
+                    <div class="form-group"><label>From *</label><select id="trans_from" onchange="updateTransferStock()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;">${locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('')}</select></div>
+                    <div class="form-group"><label>To *</label><select id="trans_to" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;">${locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('')}</select></div>
+                    <div class="form-group" style="justify-content:flex-end;"><button class="btn btn-warning" onclick="saveTransfer()">🔄 Transfer</button></div>
+                </div>
+                <div id="liveTransferStock" style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-bottom:15px;display:none;"><strong>📊 Available: </strong><span id="liveTransferStockCount" style="font-weight:700;">0</span></div>
+                <div class="card-title">📋 Recent Transfers</div>
+                <div class="table-container"><table class="records-table"><thead><tr><th>Date</th><th>Article</th><th>Color</th><th>Qty</th><th>From</th><th>To</th></tr></thead><tbody>${transfers.slice(-10).reverse().map(t => { const a = articles.find(x => x.id == t.articleId); const fl = locations.find(x => x.id == t.fromId); const tl = locations.find(x => x.id == t.toId); const col = colors.find(c => c.id == t.colorId); return `<tr><td>${new Date(t.date).toLocaleDateString()}</td><td>${a?.name||'?'}</td><td>${col?.name||'—'}</td><td><strong>${t.qty}</strong></td><td>${fl?.name||'?'}</td><td>${tl?.name||'?'}</td></tr>`; }).join('')}</tbody></table></div>`;
+        }
+
+        function transCategoryChange() {
+            const catId = document.getElementById('trans_category').value;
+            const brandSel = document.getElementById('trans_brand');
+            const artSel = document.getElementById('trans_article');
+            const colSel = document.getElementById('trans_color');
+            brandSel.innerHTML = '<option value="">-- Select --</option>';
+            artSel.innerHTML = '<option value="">-- Select --</option>';
+            colSel.innerHTML = '<option value="">-- Select --</option>';
+            brandSel.disabled = !catId;
+            artSel.disabled = true;
+            colSel.disabled = true;
+            if (catId) { getBrandsByCategory(catId).forEach(b => { brandSel.innerHTML += `<option value="${b.id}">${b.name}</option>`; }); }
+        }
+
+        function transBrandChange() {
+            const brandId = document.getElementById('trans_brand').value;
+            const artSel = document.getElementById('trans_article');
+            const colSel = document.getElementById('trans_color');
+            artSel.innerHTML = '<option value="">-- Select --</option>';
+            colSel.innerHTML = '<option value="">-- Select --</option>';
+            artSel.disabled = !brandId;
+            colSel.disabled = true;
+            if (brandId) { getArticlesByBrand(brandId).forEach(a => { artSel.innerHTML += `<option value="${a.id}" data-unit="${a.unitId}">${a.name}</option>`; }); }
+        }
+
+        function transArticleChange() {
+            const artId = document.getElementById('trans_article').value;
+            const colSel = document.getElementById('trans_color');
+            const unitInp = document.getElementById('trans_unit');
+            colSel.innerHTML = '<option value="">-- Select --</option>';
+            if (artId) {
+                const opt = document.getElementById('trans_article').selectedOptions[0];
+                if (opt && opt.dataset.unit) unitInp.value = getUnitById(parseInt(opt.dataset.unit)).name;
+                getColorsByArticle(artId).forEach(c => { colSel.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
+                colSel.disabled = false;
+                updateTransferStock();
+            } else { unitInp.value = ''; colSel.disabled = true; }
+        }
+
+        function updateTransferStock() {
+            const liveDiv = document.getElementById('liveTransferStock');
+            const liveCount = document.getElementById('liveTransferStockCount');
+            const qtyInput = document.getElementById('trans_qty');
+            if (!liveDiv || !liveCount) return;
+            const artId = document.getElementById('trans_article')?.value;
+            const colId = document.getElementById('trans_color')?.value;
+            const fromId = parseInt(document.getElementById('trans_from')?.value);
+            if (!artId || !colId || !fromId) { liveDiv.style.display = 'none'; return; }
+            const allEntries = getData('stock_entries', []);
+            const fromLoc = getLocations().find(l => l.id == fromId);
+            let availableStock = 0;
+            allEntries.forEach(entry => { if (entry.articleId == artId && entry.colorId == colId && (entry.locationId == fromId || entry.locationName === fromLoc?.name)) { availableStock += (parseFloat(entry.qty) || 0); } });
+            liveDiv.style.display = 'block';
+            liveCount.textContent = availableStock;
+            if (availableStock <= 0) { liveCount.style.color = 'red'; liveDiv.style.background = '#fee2e2'; }
+            else if (availableStock < 10) { liveCount.style.color = 'orange'; liveDiv.style.background = '#fef3c7'; }
+            else { liveCount.style.color = 'green'; liveDiv.style.background = '#f0fdf4'; }
+            if (qtyInput && parseFloat(qtyInput.value) > availableStock && availableStock > 0) { showToast(`⚠️ Only ${availableStock} available!`); }
+        }
+
+        function saveTransfer() {
+            const articleId = document.getElementById('trans_article')?.value;
+            const colorId = document.getElementById('trans_color')?.value;
+            const qty = parseFloat(document.getElementById('trans_qty')?.value) || 0;
+            const fromId = parseInt(document.getElementById('trans_from')?.value);
+            const toId = parseInt(document.getElementById('trans_to')?.value);
+            if (!articleId || qty <= 0 || !fromId || !toId) { showToast('⚠️ Fill all fields'); return; }
+            if (fromId === toId) { showToast('⚠️ Same location!'); return; }
+            const allEntries = getData('stock_entries', []);
+            const fromLoc = getLocations().find(l => l.id == fromId);
+            const toLoc = getLocations().find(l => l.id == toId);
+            const availableStock = allEntries.filter(e => e.articleId == articleId && (e.locationId == fromId || e.locationName === fromLoc?.name)).reduce((sum, e) => sum + (parseFloat(e.qty) || 0), 0);
+            if (availableStock < qty) { showToast(`⚠️ Not enough stock! Available: ${availableStock}`); return; }
+            const transfers = getData('inventory_transfers', []);
+            const transferId = Date.now() + Math.random().toString(36).substr(2, 9);
+            transfers.push({ id: transferId, date: new Date().toISOString(), articleId: parseInt(articleId), colorId: parseInt(colorId) || null, qty, fromId, toId, fromName: fromLoc?.name, toName: toLoc?.name });
+            setData('inventory_transfers', transfers);
+            const entries = getData('stock_entries', []);
+            entries.push({ id: Date.now(), date: new Date().toISOString(), articleId: parseInt(articleId), colorId: parseInt(colorId) || null, qty: -Math.abs(qty), locationId: fromId, locationName: fromLoc?.name || 'Unknown', type: 'TRANSFER_OUT', referenceId: transferId, referenceType: 'Transfer' });
+            entries.push({ id: Date.now() + 1, date: new Date().toISOString(), articleId: parseInt(articleId), colorId: parseInt(colorId) || null, qty: Math.abs(qty), locationId: toId, locationName: toLoc?.name || 'Unknown', type: 'TRANSFER_IN', referenceId: transferId, referenceType: 'Transfer' });
+            setData('stock_entries', entries);
+            showToast('✅ Transfer complete!');
+            renderTransferPage();
+            if (currentPage === 'inventoryMovement') renderMovementPage();
+            if (currentPage === 'stockCheck') renderStockCheckPage();
+        }
+
+        function renderMovementPage() {
+            const card = document.getElementById('movementCard');
+            if (!card) return;
+            const entries = getData('stock_entries', []);
+            const articles = getArticles();
+            const colors = getColors();
+            const locations = getLocations();
+            card.innerHTML = `
+                <div class="card-title">📋 All Stock Movements (${entries.length})</div>
+                <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:15px;">
+                    <div style="background:#dbeafe;padding:15px;border-radius:8px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#1e40af;">${entries.filter(e => (e.qty||0) > 0).reduce((s,e) => s + e.qty, 0)}</div><div style="font-size:0.75rem;">Total IN</div></div>
+                    <div style="background:#fee2e2;padding:15px;border-radius:8px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#dc2626;">${Math.abs(entries.filter(e => (e.qty||0) < 0).reduce((s,e) => s + e.qty, 0))}</div><div style="font-size:0.75rem;">Total OUT</div></div>
+                    <div style="background:#dcfce7;padding:15px;border-radius:8px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#166534;">${entries.reduce((s,e) => s + (e.qty||0), 0)}</div><div style="font-size:0.75rem;">Net Stock</div></div>
+                </div>
+                <div class="table-container" style="max-height:500px;overflow-y:auto;"><table class="records-table"><thead><tr><th>Date</th><th>Article</th><th>Color</th><th>Qty</th><th>Location</th><th>Type</th></tr></thead><tbody>${entries.slice(-200).reverse().map(e => { const a = articles.find(x => x.id == e.articleId); const col = colors.find(x => x.id == e.colorId); const l = e.locationName || (locations.find(x => x.id == e.locationId)?.name) || 'Default'; let badgeClass = 'stock-in'; if (e.type?.includes('OUT')) badgeClass = 'stock-out'; else if (e.type?.includes('TRANSFER')) badgeClass = 'stock-transfer'; return `<tr><td>${new Date(e.date).toLocaleString()}</td><td><strong>${a?.name||'N/A'}</strong></td><td>${col?.name||'—'}</td><td style="color:${(e.qty||0)<0?'#dc2626':'#059669'};font-weight:bold;">${(e.qty>0?'+':'')+e.qty}</td><td>📍 ${l}</td><td><span class="stock-badge ${badgeClass}">${e.type||'IN'}</span></td></tr>`; }).join('')}</tbody></table></div>`;
+        }
+
+        function renderLocationsPage() {
+            const card = document.getElementById('locationsCard');
+            if (!card) return;
+            const locations = getLocations();
+            card.innerHTML = `
+                <div class="card-title">📍 Locations (${locations.length})</div>
+                <div class="table-container"><table class="records-table"><thead><tr><th>#</th><th>Name</th><th>Address</th><th>Actions</th></tr></thead><tbody>${locations.map((l,i) => `<tr><td>${i+1}</td><td>${l.name}</td><td>${l.address||'—'}</td><td class="actions"><button class="btn-icon btn-delete" onclick="deleteLocation(${l.id})">🗑️</button></td></tr>`).join('')}</tbody></table></div>`;
+        }
+
+        function addLocation() {
+            const name = prompt('Location Name:');
+            if (!name) return;
+            const address = prompt('Address:') || '';
+            const locs = getLocations();
+            locs.push({ id: Date.now(), name, address });
+            setData('inventory_locations', locs);
+            showToast('✅ Location added!');
+            renderLocationsPage();
+        }
+
+        function deleteLocation(id) {
+            if (!confirm('Delete?')) return;
+            setData('inventory_locations', getLocations().filter(l => l.id !== id));
+            showToast('🗑️ Deleted');
+            renderLocationsPage();
+        }
+
+        function renderCompanySettings() {
+            const card = document.getElementById('settingsCard');
+            if (!card) return;
+            const s = getCompanySettings();
+            card.innerHTML = `
+                <div class="card-title">🏢 Company Information</div>
+                <div class="settings-form">
+                    <div class="form-row"><div class="form-group"><label>Company Name</label><input type="text" id="set_companyName" value="${s.companyName}"></div><div class="form-group"><label>Website</label><input type="text" id="set_website" value="${s.website}"></div></div>
+                    <div class="form-row"><div class="form-group"><label>Address</label><input type="text" id="set_streetAddress" value="${s.streetAddress}"></div><div class="form-group"><label>City, State ZIP</label><input type="text" id="set_cityStateZip" value="${s.cityStateZip}"></div></div>
+                    <div class="form-row"><div class="form-group"><label>Phone</label><input type="text" id="set_phone" value="${s.phone}"></div><div class="form-group"><label>Fax</label><input type="text" id="set_fax" value="${s.fax}"></div><div class="form-group small"><label>Tax Rate (%)</label><input type="number" id="set_taxRate" value="${s.taxRate}" step="any"></div></div>
+                    <div class="form-group"><label>Bank Details</label><textarea id="set_bankDetails" rows="3" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:6px;">${s.bankDetails}</textarea></div>
+                    <div class="form-group"><label>Terms</label><textarea id="set_terms" rows="3" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:6px;">${s.terms}</textarea></div>
+                    <button class="btn btn-primary" onclick="saveCompanySettings()">💾 Save Settings</button>
+                </div>`;
+        }
+
+        function saveCompanySettings() {
+            const settings = {
+                companyName: document.getElementById('set_companyName')?.value || '',
+                streetAddress: document.getElementById('set_streetAddress')?.value || '',
+                cityStateZip: document.getElementById('set_cityStateZip')?.value || '',
+                phone: document.getElementById('set_phone')?.value || '',
+                fax: document.getElementById('set_fax')?.value || '',
+                website: document.getElementById('set_website')?.value || '',
+                bankDetails: document.getElementById('set_bankDetails')?.value || '',
+                contactPerson: document.getElementById('set_contactPerson')?.value || '',
+                contactPhone: document.getElementById('set_contactPhone')?.value || '',
+                contactEmail: document.getElementById('set_contactEmail')?.value || '',
+                taxRate: parseFloat(document.getElementById('set_taxRate')?.value) || 0,
+                terms: document.getElementById('set_terms')?.value || ''
+            };
+            setData('company_settings', settings);
+            showToast('✅ Settings saved!');
+        }
+
+        function renderStockCheckPage() {
+            const card = document.getElementById('stockCheckCard');
+            if (!card) return;
+            const categories = getCategories();
+            const brands = getBrands();
+            const articles = getArticles();
+            const colors = getColors();
+            const units = getUnits();
+            const locations = getLocations();
+            card.innerHTML = `
+                <div class="card-title">🔍 Live Stock Check</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Category</label><select id="stockCheck_category" onchange="onStockCheckCategoryChange()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">All</option>${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+                    <div class="form-group"><label>Brand</label><select id="stockCheck_brand" onchange="onStockCheckBrandChange()" disabled style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">All</option></select></div>
+                    <div class="form-group"><label>Article</label><select id="stockCheck_article" onchange="onStockCheckArticleChange()" disabled style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">All</option></select></div>
+                    <div class="form-group"><label>Color</label><select id="stockCheck_color" onchange="filterStockCheck()" disabled style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">All</option></select></div>
+                    <div class="form-group"><label>Unit</label><select id="stockCheck_unit" onchange="filterStockCheck()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">All</option>${units.map(u => `<option value="${u.id}">${u.name}</option>`).join('')}</select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Location</label><select id="stockCheck_location" onchange="filterStockCheck()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">All</option>${locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('')}</select></div>
+                    <div class="form-group"><label>Status</label><select id="stockCheck_status" onchange="filterStockCheck()" style="padding:11px;border:2px solid #e2e8f0;border-radius:6px;"><option value="">All</option><option value="in_stock">✅ In Stock</option><option value="low">⚠️ Low</option><option value="out">❌ Out</option></select></div>
+                    <div class="form-group" style="justify-content:flex-end;"><button class="btn btn-outline btn-sm" onclick="resetStockCheckFilters()" style="margin-top:18px;">🔄 Reset</button></div>
+                </div>
+                <div id="stockCheckSummary" style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:15px;"></div>
+                <div class="table-container" style="max-height:500px;overflow-y:auto;"><table class="records-table"><thead><tr><th>#</th><th>Article</th><th>Brand</th><th>Category</th><th>Color</th><th>Unit</th><th>Location</th><th>Stock</th><th>Status</th></tr></thead><tbody id="stockCheckBody"><tr><td colspan="9" style="text-align:center;padding:20px;">Loading...</td></tr></tbody></table></div>`;
+            filterStockCheck();
+        }
+
+        function onStockCheckCategoryChange() {
+            const catId = document.getElementById('stockCheck_category')?.value;
+            const brandSel = document.getElementById('stockCheck_brand');
+            const artSel = document.getElementById('stockCheck_article');
+            const colSel = document.getElementById('stockCheck_color');
+            brandSel.innerHTML = '<option value="">All</option>';
+            artSel.innerHTML = '<option value="">All</option>';
+            colSel.innerHTML = '<option value="">All</option>';
+            brandSel.disabled = !catId;
+            artSel.disabled = true;
+            colSel.disabled = true;
+            if (catId) { getBrandsByCategory(catId).forEach(b => { brandSel.innerHTML += `<option value="${b.id}">${b.name}</option>`; }); }
+            filterStockCheck();
+        }
+
+        function onStockCheckBrandChange() {
+            const brandId = document.getElementById('stockCheck_brand')?.value;
+            const artSel = document.getElementById('stockCheck_article');
+            const colSel = document.getElementById('stockCheck_color');
+            artSel.innerHTML = '<option value="">All</option>';
+            colSel.innerHTML = '<option value="">All</option>';
+            artSel.disabled = !brandId;
+            colSel.disabled = true;
+            if (brandId) { getArticlesByBrand(brandId).forEach(a => { artSel.innerHTML += `<option value="${a.id}">${a.name}</option>`; }); }
+            filterStockCheck();
+        }
+
+        function onStockCheckArticleChange() {
+            const artId = document.getElementById('stockCheck_article')?.value;
+            const colSel = document.getElementById('stockCheck_color');
+            colSel.innerHTML = '<option value="">All</option>';
+            colSel.disabled = !artId;
+            if (artId) { getColorsByArticle(artId).forEach(c => { colSel.innerHTML += `<option value="${c.id}">${c.name}</option>`; }); }
+            filterStockCheck();
+        }
+
+        function filterStockCheck() {
+            const catId = document.getElementById('stockCheck_category')?.value || '';
+            const brandId = document.getElementById('stockCheck_brand')?.value || '';
+            const artId = document.getElementById('stockCheck_article')?.value || '';
+            const colId = document.getElementById('stockCheck_color')?.value || '';
+            const unitId = parseInt(document.getElementById('stockCheck_unit')?.value) || '';
+            const locId = parseInt(document.getElementById('stockCheck_location')?.value) || '';
+            const statusFilter = document.getElementById('stockCheck_status')?.value || '';
+            const articles = getArticles();
+            const brands = getBrands();
+            const categories = getCategories();
+            const colors = getColors();
+            const units = getUnits();
+            const locations = getLocations();
+            const stockEntries = getData('stock_entries', []);
+            let stockMap = {};
+            stockEntries.forEach(entry => {
+                const key = `${entry.articleId}_${entry.locationId || 1}_${entry.colorId || 0}`;
+                if (!stockMap[key]) { const art = articles.find(a => a.id == entry.articleId); const col = colors.find(c => c.id == entry.colorId); stockMap[key] = { articleId: entry.articleId, locationId: entry.locationId || 1, colorId: entry.colorId || null, articleName: art?.name || 'N/A', colorName: col?.name || '—', unitId: art?.unitId || null, qty: 0 }; }
+                stockMap[key].qty += (parseFloat(entry.qty) || 0);
+            });
+            let filteredData = Object.values(stockMap).filter(item => {
+                const art = articles.find(a => a.id == item.articleId);
+                if (!art) return false;
+                const brand = brands.find(b => b.id == art.brandId);
+                const cat = brand ? categories.find(c => c.id == brand.categoryId) : null;
+                if (catId && (!cat || cat.id != catId)) return false;
+                if (brandId && (!brand || brand.id != brandId)) return false;
+                if (artId && art.id != artId) return false;
+                if (colId && (!item.colorId || item.colorId != colId)) return false;
+                if (unitId && art.unitId != unitId) return false;
+                if (locId && item.locationId != locId) return false;
+                if (statusFilter === 'in_stock' && item.qty <= 10) return false;
+                if (statusFilter === 'low' && (item.qty <= 0 || item.qty > 10)) return false;
+                if (statusFilter === 'out' && item.qty > 0) return false;
+                return true;
+            });
+            filteredData.sort((a, b) => a.qty - b.qty);
+            const totalItems = filteredData.length;
+            const totalQty = filteredData.reduce((s, i) => s + i.qty, 0);
+            const inStock = filteredData.filter(i => i.qty > 10).length;
+            const lowStock = filteredData.filter(i => i.qty > 0 && i.qty <= 10).length;
+            const outOfStock = filteredData.filter(i => i.qty <= 0).length;
+            document.getElementById('stockCheckSummary').innerHTML = `
+                <div style="background:#dbeafe;padding:15px;border-radius:10px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.8rem;font-weight:700;color:#1e40af;">${totalItems}</div><div style="font-size:0.75rem;">📦 Products</div></div>
+                <div style="background:#dcfce7;padding:15px;border-radius:10px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.8rem;font-weight:700;color:#166534;">${totalQty}</div><div style="font-size:0.75rem;">📊 Total Qty</div></div>
+                <div style="background:#d1fae5;padding:15px;border-radius:10px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.8rem;font-weight:700;color:#059669;">${inStock}</div><div style="font-size:0.75rem;">✅ In Stock</div></div>
+                <div style="background:#fef3c7;padding:15px;border-radius:10px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.8rem;font-weight:700;color:#d97706;">${lowStock}</div><div style="font-size:0.75rem;">⚠️ Low</div></div>
+                <div style="background:#fee2e2;padding:15px;border-radius:10px;flex:1;min-width:100px;text-align:center;"><div style="font-size:1.8rem;font-weight:700;color:#dc2626;">${outOfStock}</div><div style="font-size:0.75rem;">❌ Out</div></div>`;
+            let tbody = filteredData.map((item, idx) => {
+                const art = articles.find(a => a.id == item.articleId);
+                const brand = art ? brands.find(b => b.id == art.brandId) : null;
+                const cat = brand ? categories.find(c => c.id == brand.categoryId) : null;
+                const unit = art ? units.find(u => u.id == art.unitId) : null;
+                const loc = locations.find(l => l.id == item.locationId);
+                let statusBadge = ''; let qtyColor = 'green';
+                if (item.qty <= 0) { statusBadge = '<span class="stock-badge stock-out">❌ OUT</span>'; qtyColor = 'red'; }
+                else if (item.qty <= 10) { statusBadge = '<span class="stock-badge stock-transfer">⚠️ LOW</span>'; qtyColor = 'orange'; }
+                else { statusBadge = '<span class="stock-badge stock-in">✅ IN STOCK</span>'; qtyColor = 'green'; }
+                return `<tr><td>${idx+1}</td><td><strong>${art?.name||'N/A'}</strong></td><td>${brand?.name||'—'}</td><td>${cat?.name||'—'}</td><td>${item.colorName}</td><td>${unit?.name||'—'}</td><td>📍 ${loc?.name||'Default'}</td><td><strong style="color:${qtyColor};">${item.qty}</strong></td><td>${statusBadge}</td></tr>`;
+            }).join('');
+            document.getElementById('stockCheckBody').innerHTML = tbody || '<tr><td colspan="9" style="text-align:center;padding:20px;">📭 No stock found</td></tr>';
+        }
+
+        function resetStockCheckFilters() {
+            document.getElementById('stockCheck_category').value = '';
+            document.getElementById('stockCheck_brand').value = '';
+            document.getElementById('stockCheck_brand').disabled = true;
+            document.getElementById('stockCheck_article').value = '';
+            document.getElementById('stockCheck_article').disabled = true;
+            document.getElementById('stockCheck_color').value = '';
+            document.getElementById('stockCheck_color').disabled = true;
+            document.getElementById('stockCheck_unit').value = '';
+            document.getElementById('stockCheck_location').value = '';
+            document.getElementById('stockCheck_status').value = '';
+            filterStockCheck();
+            showToast('🔄 Filters reset!');
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.getElementById('hamburgerBtn').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const main = document.querySelector('.main-content');
+            sidebar.classList.toggle('open');
+            main.classList.toggle('shifted');
+        });
+
+        renderCurrentPage();
+        console.log('✅ SalesPro ERP v3.0 Ready!');
+        console.log('🎨 Enhanced with: Glassmorphism, Gradients, Animations, Responsive Design');
+        console.log('📦 All original functionality preserved & enhanced');
+    </script>
+</body>
+</html>
